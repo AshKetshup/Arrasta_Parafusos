@@ -1,6 +1,20 @@
 # Arrasta Parafusos
 
+|        Nome        |  Numero  | Curso | Universidade |
+|--------------------|----------|-------|--------------|    
+|    Diogo Simões    | `a41266` |  LEI  |      UBI     |
+|  Cristiano Santos  | `a43464` |  LEI  |      UBI     |
 
+---
+
+## Distribuição de Questões
+
+|                    | **1** | **2** | **3** | **4** | **5** | **6** | **7** | **8** |
+|--------------------|-------|-------|-------|-------|-------|-------|-------|-------|
+|    Diogo Simões    |       |       |       |       |       |       |       |       |
+|  Cristiano Santos  |       |       |       |       |       |       |       |       |
+
+---
 ## Boundaries
 !["Boundaries Identifiers"](./docs/imgs/Boundaries.jpg)
 
@@ -26,18 +40,18 @@
 ---
 ## Questões
 
-#### 1. Qual foi a penúltima pessoa do sexo feminino que viste?
+####  1. Qual foi a penúltima pessoa do sexo feminino que viste?
 
 ##### Sugestão de solução:
 Distinguir sexo feminino pelo ultimo caracter.
 Se 'a' então feminino.
 
-Irmos dando append a uma lista o nome de cada pessoa que encontramos.
+Irmos dando `append` a uma lista o nome de cada pessoa que encontramos.
 Quando for requesitada a resposta é percorrer a lista do fim para o inicio e a resposta será a segunda pessoa do sexo feminino.
-
 Outra solução seria fazer uma lista para cada sexo. E assim seria apenas aceder ao elemento de indice -2 da lista de pessoas do sexo feminino.
+Ou ainda simplesmente manter em memoria uma fila (lista) com apenas 2 elementos (um tuplo não porque são imutaveis). Sempre que apanharmos uma moça simplesmente vamos trocando.
 
-
+* [ ] **COMPLETED**
 
 #### 2. Em que tipo de zona estás agora?
 
@@ -46,21 +60,31 @@ Durante o uso do robô se ele encontrar um item de "Zona" vai atraves das coorde
 
 Quando for requesitada a resposta é apenas necessario descobrir a sala em que estamos e se já tivermos encontrado que zona estamos então dá print a isso. Caso contrario dá print que ainda não temos essa resposta.
 
+* [ ] **COMPLETED**
+
 #### 3. Qual o caminho para a papelaria?
 
 ##### Sugestão de solução:
 Um Grafo com cada aresta de onde estamos para onde passamos.
 Utilizar Pesquisa de Primeiro em Profundidade (PPP) ou Pesquisa de Primeiro em Largura (PPL).
 
+* [ ] **COMPLETED**
+
 #### 4. Qual a distância até ao talho?
 
 ##### Sugestão de solução:
-Aberto a sugestões.
+Talvez utilizando o grafo já feito anteriormente verificavamos o caminho pelas salas e depois o ponto mais proximo de cada sala. Até chegarmos ao talho. (isto se tivermos já encontrado a zona do talho)
+
+* [ ] **COMPLETED**
 
 #### 5. Quanto tempo achas que demoras a ir de onde estás até à caixa?
 
 ##### Sugestão de solução:
 Calcular em media a velocidade. Pela distancia percorrida desde o inicio do programa. (Talvez pausar quando o bixo não se mexe)
+
+Usar o mesmo metodo que a distancia do talho e descobrir a descobrir o tempo que seria gasto.
+
+* [ ] **COMPLETED**
 
 #### 6. Quanto tempo achas que falta até ficares com metade da bateria que tens agora?
 
@@ -69,17 +93,23 @@ Fazendo uma regressão linear. E no momento em que for pedido seria apenas busca
 y -> bateria
 x -> tempo
 
-(talvez reiniciar sempre que a bateria estiver a 100%)
+Talvez reiniciar sempre que a bateria estiver a 100% ou juntar à media (media do declive da reta).
+
+* [ ] **COMPLETED** 
 
 #### 7. Qual é a probabilidade da próxima pessoa a encontrares ser uma criança?
 
 ##### Sugestão de solução:
 Deve ser uma rede Bayesiana ou uma Condicional. Esta deixo contigo @CRISphantom04
 
+* [ ] **COMPLETED**
+
 #### 8. Qual é a probabilidade de encontrar um adulto numa zona se estiver lá uma criança mas não estiver lá um carrinho?
 
 ##### Sugestão de solução:
 Deve ser uma rede Bayesiana ou uma Condicional. Esta deixo contigo @CRISphantom04
+
+* [ ] **COMPLETED**
 
 ---
 ## Dependências
