@@ -1,7 +1,7 @@
+from customException import SimpleException
+
 class Objects():
-    """
-    Classe encarregue de armazenar os objetos encontrados pelo robô sem repetição.
-    """
+    """Classe encarregue de armazenar os objetos encontrados pelo robô sem repetição."""
     _people         = list()
     _objects        = list()
     _lastTwoFemales = (None, None)
@@ -23,14 +23,16 @@ class Objects():
         "LOCALS": [OBJ["ZONE"]]                                    # Locais
     }
     
+
     ERROR_NOT_ENOUGH_FEMALES = "Não foram avistadas pelo menos 2 pessoas do sexo feminino até ao momento"
+    class NotEnoughFemalesException(SimpleException):
+        """
+        Exception used to describe when there isn't enough females saw.
 
-    class NotEnoughFemalesException(Exception):
-        def __init__(self, error) -> None:
-            self.msg = error
-
-        def what(self) -> str:
-            return self.msg
+        Inherits:
+            SimpleException (class): Very basic exception
+        """        
+        pass
 
         
     @staticmethod
@@ -75,13 +77,14 @@ class Objects():
         Returns:
             bool: foi previamente encontrado
         """
+        # Verdadeiro se o objeto já tiver sido avistado.
         return ((category, name) in Objects._people + Objects._objects)
     
     
     @staticmethod
     def sexCheck(name) -> str:
         """
-        * Indica se o sexo do objeto pelo nome.
+        * Indica se o sexo do objeto pelo ultimo caracter no nome do objeto.
 
         Args:
             name (str): nome do objeto
@@ -89,6 +92,7 @@ class Objects():
         Returns:
             str: sexo do nome do objeto = "female" | "male".
         """
+        # Se o ultimo caracter do nome for 'a' então é feminino caso contrario é masculino.
         return "female" if name[-1] == 'a' else "male"
     
     
@@ -104,6 +108,7 @@ class Objects():
         Returns:
             bool: É a ultima pessoa do sexo feminino encontrado pelo robô
         """
+        # Verificamos se a categoria e o nome dados correspondem aos dados da ultima pessoa do sexo feminino avistada.
         return (category, name) == Objects._lastTwoFemales[0]
     
     
@@ -117,8 +122,12 @@ class Objects():
 
         Returns:
             tuple[str, str]: (categoria do objeto, nome do objeto)
-        """        
+        """
+        # Se estiver algum None no tuplo:
         if None in Objects._lastTwoFemales:
+            # Levantamos a exceção de que ainda não avistamos mais que 2 pessoas.
             raise Objects.NotEnoughFemalesException(Objects.ERROR_NOT_ENOUGH_FEMALES)
+        # Caso não encontremos nenhum None:
         else:
+            # Significa que já avistamos pelo menos 2 pessoas do sexo feminino e portanto devolvemos a penultima avistada. 
             return Objects._lastTwoFemales[1]
