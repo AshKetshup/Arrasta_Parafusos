@@ -6,46 +6,54 @@ e quaisquer outras que achem necessário criar
 
 colocar aqui os nomes e número de aluno:
 41266, Diogo Simões
-_____, Cristiano Santos
+43464, Cristiano Santos
 
 """
+from objectManager import Objects
 import time
-import pygame
 
-def work(posicao, bateria, objetos):
-    # esta função é invocada em cada ciclo de clock
-    # e pode servir para armazenar informação recolhida pelo agente
-    # recebe:
-    # posicao = a posição atual do agente, uma lista [X,Y]
-    # bateria = valor de energia na bateria, um número inteiro >= 0
-    # objetos = o nome do(s) objeto(s) próximos do agente, uma string
 
-    # podem achar o tempo atual usando, p.ex.
-    # time.time()
-    # print(f"Posição: X: {posicao[0]}, Y: {posicao[1]}")
+def work(posicao, bateria, objetos) -> None:
+    """
+    Esta função é invocada em cada ciclo de clock e pode servir para armazenar 
+    informação recolhida pelo agente
+
+    Podem achar o tempo atual usando, p.ex. `time.time()`
+    
+    Args:
+        posicao (list of int): A posição atual do agente, uma lista [X,Y]
+        bateria (int): Valor de energia na bateria, um número inteiro >= 0
+        objetos (list of string): Nome do(s) objeto(s) próximos do agente, uma string
+    """
     pass
-
 
 	
 def resp1():
-    """Qual foi a penúltima pessoa do sexo feminino que viste?"""    
-    pass
+    """Qual foi a penúltima pessoa do sexo feminino que viste?"""
+    try:
+        print(Objects.getPenultSawFemale())
+    except Objects.NotEnoughFemalesException as e:
+        print(e.what())
 
 def resp2():
     """Em que tipo de zona estás agora?"""
     pass
 
+
 def resp3():
     """Qual o caminho para a papelaria?"""
     pass
+
 
 def resp4():
     """Qual a distância até ao talho?"""
     pass
 
+
 def resp5():
     """Quanto tempo achas que demoras a ir de onde estás até à caixa?"""    
     pass
+
 
 def resp6():
     """
@@ -53,6 +61,7 @@ def resp6():
     agora?
     """    
     pass
+
 
 def resp7():
     """Qual é a probabilidade da próxima pessoa a encontrares ser uma criança?"""
