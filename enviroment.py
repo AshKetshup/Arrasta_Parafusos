@@ -25,12 +25,13 @@ class Zone():
         pass
     
     def __init__(self, xRange: tuple[int, int], yRange: tuple[int, int]) -> None:
-        # if xBound[0] >= xBound[1] or yBound[0] >= yBound[1]:
-        #     raise Zone.InvalidBoundariesException(
-        #         f"{Zone.ERROR_INVALID_BOUNDARIES} x -> {xBound} y -> {yBound}", 
-        #         myself()
-        #     )
-        # else:
+        
+        if not xRange[0] < xRange[1] or not yRange[0] < yRange[1]:
+            raise Zone.InvalidBoundariesException(\
+                f"{Zone.ERROR_INVALID_BOUNDARIES} x -> {xRange} y -> {yRange}",\
+                myself()\
+            )
+        
         self.xRange = xRange
         self.yRange = yRange
         self.zoneType = None
@@ -54,10 +55,10 @@ class Enviroment():
     _zones = [
         Zone(( 30, 135), (165, 435)),
         Zone((135, 285), (165, 285)),
-        Zone((135, 285), (330, 285)),
+        Zone((135, 285), (285, 330)),
         Zone((285, 435), (165, 435)),
         Zone((435, 770), (165, 285)),
-        Zone((435, 770), (330, 285)),
+        Zone((435, 770), (285, 330)),
         Zone((180, 285), ( 30, 135)),
         Zone(( 30, 135), ( 30, 135)),
         Zone((330, 435), ( 30, 135)),
