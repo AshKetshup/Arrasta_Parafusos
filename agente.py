@@ -25,6 +25,9 @@ def work(posicao, bateria, objetos) -> None:
         bateria (int): Valor de energia na bateria, um número inteiro >= 0
         objetos (list of string): Nome do(s) objeto(s) próximos do agente, uma string
     """
+    posicao = tuple(posicao)
+    
+    
     pass
 
 	

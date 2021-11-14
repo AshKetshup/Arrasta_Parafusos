@@ -1,4 +1,5 @@
 from customException import SimpleException
+from typing import overload
 
 class Objects():
     """Classe encarregue de armazenar os objetos encontrados pelo robô sem repetição."""
@@ -23,6 +24,7 @@ class Objects():
         "LOCALS": [OBJ["ZONE"]]                                    # Locais
     }
     
+    SPLITTER = "_"
 
     ERROR_NOT_ENOUGH_FEMALES = "Não foram avistadas pelo menos 2 pessoas do sexo feminino até ao momento"
     class NotEnoughFemalesException(SimpleException):
@@ -34,9 +36,9 @@ class Objects():
         """        
         pass
 
-        
+
     @staticmethod
-    def add(category, name) -> None:
+    def add(category: str, name: str) -> None:
         """
         * Adiciona o par (categoria, nome) se o objeto for novo.
         * Atualiza, caso necessario a queue das 2 ultimas pessoas do sexo feminino.
@@ -64,9 +66,38 @@ class Objects():
                 # Vamos dar swap aos elementos retirando o mais antigo
                 Objects._lastTwoFemales = ((category, name), Objects._lastTwoFemales[0])
 
-                    
+    @overload
     @staticmethod
-    def isIn(category, name) -> bool:
+    def add(obj: tuple[str, str]) -> None:
+        """
+        * Adiciona o par (categoria, nome) se o objeto for novo.
+        * Atualiza, caso necessario a queue das 2 ultimas pessoas do sexo feminino.
+
+        Args:
+            obj (tuple[str, str]): objeto
+        """
+        # Se o objeto não foi ainda encontrado:
+        if not Objects.isIn(obj): 
+            # Se a categoria for de pessoa:
+            if obj[0] in Objects.CATEGORY["PEOPLE"]:
+                # Vamos adicionar ao à lista de pessoas.
+                Objects._people.append(obj)
+            # Se a categoria for de objetos:
+            else:
+                # Vamos adicionar ao à lista de objetos.
+                Objects._objects.append(obj)
+        
+        
+        # Se o objeto for uma pessoa do sexo feminino: 
+        if Objects.sexCheck(obj[1]) == "female":
+            # Se não for a ultima pessoa do sexo feminino a ser encontrada:
+            if not Objects.isLastFemale(obj):
+                # Vamos dar swap aos elementos retirando o mais antigo
+                Objects._lastTwoFemales = (obj, Objects._lastTwoFemales[0])
+
+    
+    @staticmethod
+    def isIn(category: str, name: str) -> bool:
         """
         * Retorna verdadeiro se o objeto já tiver sido previamente encontrado.
 
@@ -80,9 +111,24 @@ class Objects():
         # Verdadeiro se o objeto já tiver sido avistado.
         return ((category, name) in Objects._people + Objects._objects)
     
+    @overload
+    @staticmethod
+    def isIn(obj: tuple[str, str]) -> bool:
+        """
+        * Retorna verdadeiro se o objeto já tiver sido previamente encontrado.
+
+        Args:
+            obj (tuple[str, str]): objeto
+
+        Returns:
+            bool: foi previamente encontrado
+        """
+        # Verdadeiro se o objeto já tiver sido avistado.
+        return (obj in Objects._people + Objects._objects)                
+
     
     @staticmethod
-    def sexCheck(name) -> str:
+    def sexCheck(name: str) -> str:
         """
         * Indica se o sexo do objeto pelo ultimo caracter no nome do objeto.
 
@@ -97,7 +143,7 @@ class Objects():
     
     
     @staticmethod
-    def isLastFemale(category, name) -> bool:
+    def isLastFemale(category: str, name: str) -> bool:
         """
         * Indica se o objeto é a ultima pessoa do sexo feminino vista.
 
@@ -110,6 +156,22 @@ class Objects():
         """
         # Verificamos se a categoria e o nome dados correspondem aos dados da ultima pessoa do sexo feminino avistada.
         return (category, name) == Objects._lastTwoFemales[0]
+    
+    
+    @overload
+    @staticmethod
+    def isLastFemale(obj: tuple[str, str]) -> bool:
+        """
+        * Indica se o objeto é a ultima pessoa do sexo feminino vista.
+
+        Args:
+            obj (tuple[str, str]): objeto
+
+        Returns:
+            bool: É a ultima pessoa do sexo feminino encontrado pelo robô
+        """
+        # Verificamos se a categoria e o nome dados correspondem aos dados da ultima pessoa do sexo feminino avistada.
+        return obj == Objects._lastTwoFemales[0]
     
     
     @staticmethod
