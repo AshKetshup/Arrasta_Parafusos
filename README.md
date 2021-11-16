@@ -89,9 +89,16 @@ Usar o mesmo metodo que a distancia do talho e descobrir a descobrir o tempo que
 #### 6. Quanto tempo achas que falta até ficares com metade da bateria que tens agora?
 
 ##### Sugestão de solução:
-Fazendo uma regressão linear. E no momento em que for pedido seria apenas buscar em y = (bateria atual / 2).
+Fazendo uma regressão linear. Por cada frame (execução da função work) adicionar o par (bateria, tempo).
+Tempo seria definido pelo tempo desde que a bateria foi 100.
+E no momento em que for pedido seria apenas buscar em y = (bateria atual / 2).
+
+```python
+from sklearn.linear_model import LinearRegression
+
 y -> bateria
 x -> tempo
+```
 
 Talvez reiniciar sempre que a bateria estiver a 100% ou juntar à media (media do declive da reta).
 

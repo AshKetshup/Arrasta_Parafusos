@@ -2,10 +2,22 @@ from customException import SimpleException
 from typing import overload
 
 class Objects():
-    """Classe encarregue de armazenar os objetos encontrados pelo robô sem repetição."""
+    """
+    Classe encarregue de armazenar os objetos encontrados pelo robô sem repetição.
+
+    Raises:
+        `Objects.NotEnoughFemalesException`: Excepção usada para descrever quando não foram avistadas pessoas do sexo 
+        feminino suficientes.
+    """
     _people         = list()
     _objects        = list()
     _lastTwoFemales = (None, None)
+    
+    # SIZE: Tamanho de cada tipo de objecto que compõe o mundo
+    SIZE = {
+        "OBJECT": 25,
+        "WALL"  : 15
+    }
 
     # OBJETOS: Identifica segundo os nomes dados pelo robô
     OBJ = {
@@ -29,10 +41,10 @@ class Objects():
     ERROR_NOT_ENOUGH_FEMALES = "Não foram avistadas pelo menos 2 pessoas do sexo feminino até ao momento"
     class NotEnoughFemalesException(SimpleException):
         """
-        Exception used to describe when there isn't enough females saw.
+        Excepção usada para descrever quando não foram avistadas pessoas do sexo feminino suficientes.
 
         Inherits:
-            SimpleException (class): Very basic exception
+            `SimpleException` (class): Very basic exception
         """        
         pass
 
@@ -44,8 +56,8 @@ class Objects():
         * Atualiza, caso necessario a queue das 2 ultimas pessoas do sexo feminino.
 
         Args:
-            category (str): categoria indicada do objeto.
-            name (str): nome indicado do objeto.
+            `category` (str): categoria indicada do objeto.
+            `name` (str): nome indicado do objeto.
         """
         # Se o objeto não foi ainda encontrado:
         if not Objects.isIn(category, name): 
@@ -74,7 +86,7 @@ class Objects():
         * Atualiza, caso necessario a queue das 2 ultimas pessoas do sexo feminino.
 
         Args:
-            obj (tuple[str, str]): objeto
+            `obj` (tuple[str, str]): objeto
         """
         # Se o objeto não foi ainda encontrado:
         if not Objects.isIn(obj): 
@@ -102,8 +114,8 @@ class Objects():
         * Retorna verdadeiro se o objeto já tiver sido previamente encontrado.
 
         Args:
-            category (str): categoria do objeto
-            name (str): nome do objeto
+            `category` (str): categoria do objeto
+            `name` (str): nome do objeto
 
         Returns:
             bool: foi previamente encontrado
@@ -118,7 +130,7 @@ class Objects():
         * Retorna verdadeiro se o objeto já tiver sido previamente encontrado.
 
         Args:
-            obj (tuple[str, str]): objeto
+            `obj` (tuple[str, str]): objeto
 
         Returns:
             bool: foi previamente encontrado
@@ -133,7 +145,7 @@ class Objects():
         * Indica se o sexo do objeto pelo ultimo caracter no nome do objeto.
 
         Args:
-            name (str): nome do objeto
+            `name` (str): nome do objeto
 
         Returns:
             str: sexo do nome do objeto = "female" | "male".
@@ -148,8 +160,8 @@ class Objects():
         * Indica se o objeto é a ultima pessoa do sexo feminino vista.
 
         Args:
-            category (str): categoria do objeto
-            name (str): nome do objeto
+            `category` (str): categoria do objeto
+            `name` (str): nome do objeto
 
         Returns:
             bool: É a ultima pessoa do sexo feminino encontrado pelo robô
@@ -165,7 +177,7 @@ class Objects():
         * Indica se o objeto é a ultima pessoa do sexo feminino vista.
 
         Args:
-            obj (tuple[str, str]): objeto
+            `obj` (tuple[str, str]): objeto
 
         Returns:
             bool: É a ultima pessoa do sexo feminino encontrado pelo robô
@@ -180,7 +192,7 @@ class Objects():
         * Devolve o objeto da penultima pessoa do sexo feminino avistada.
 
         Raises:
-            Objects.NotEnoughFemalesException: levantado quando não são avistadas pessoas do sexo feminino suficientes
+            `Objects.NotEnoughFemalesException`: levantado quando não são avistadas pessoas do sexo feminino suficientes
 
         Returns:
             tuple[str, str]: (categoria do objeto, nome do objeto)
