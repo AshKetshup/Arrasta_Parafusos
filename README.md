@@ -51,7 +51,7 @@ Quando for requesitada a resposta é percorrer a lista do fim para o inicio e a 
 Outra solução seria fazer uma lista para cada sexo. E assim seria apenas aceder ao elemento de indice -2 da lista de pessoas do sexo feminino.
 Ou ainda simplesmente manter em memoria uma fila (lista) com apenas 2 elementos (um tuplo não porque são imutaveis). Sempre que apanharmos uma moça simplesmente vamos trocando.
 
-* [ ] **COMPLETED**
+* [X] **COMPLETED**
 
 #### 2. Em que tipo de zona estás agora?
 
@@ -107,14 +107,22 @@ Talvez reiniciar sempre que a bateria estiver a 100% ou juntar à media (media d
 #### 7. Qual é a probabilidade da próxima pessoa a encontrares ser uma criança?
 
 ##### Sugestão de solução:
-Deve ser uma rede Bayesiana ou uma Condicional. Esta deixo contigo @CRISphantom04
+Deve ser uma rede Bayesiana ~~ou uma Condicional~~. Esta deixo contigo @CRISphantom04
+
+É uma rede bayesiana. A probabilidade de encontrar criança não é um evento independente. 
 
 * [ ] **COMPLETED**
 
 #### 8. Qual é a probabilidade de encontrar um adulto numa zona se estiver lá uma criança mas não estiver lá um carrinho?
 
 ##### Sugestão de solução:
-Deve ser uma rede Bayesiana ou uma Condicional. Esta deixo contigo @CRISphantom04
+Deve ser uma ~~rede Bayesiana ou uma~~ Condicional. Esta deixo contigo @CRISphantom04
+
+É uma condicional.
+```
+A -> Adulto; B -> Criança; C -> Carrinho;
+P(A|B,~C) = P(A^B^~C)/P(B^~C)
+```
 
 * [ ] **COMPLETED**
 
