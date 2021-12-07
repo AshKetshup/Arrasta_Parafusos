@@ -23,7 +23,22 @@ class Objects():
         * [X] CATEGORY
         * [X] SPLITTER
     [X]: Preparar Exceção de falta de pessoas encontradas do sexo feminino
-    [ ]: 
+    [X]: Implementa Funções de management: 
+        * [X] add()
+        * [X] isIn()
+        * [X] isLastFemale()
+        * [X] sexCheck()
+        * [X] getPenultSawFemale()
+        * [X] getListOfPeople()
+        * [X] getListOfObjects()
+    [X]: Completa a documentação: 
+        * [X] add()
+        * [X] isIn()
+        * [X] isLastFemale()
+        * [X] sexCheck()
+        * [X] getPenultSawFemale()
+        * [X] getListOfPeople()
+        * [X] getListOfObjects()
     """
     _people         = list()
     _objects        = list()
@@ -123,12 +138,10 @@ class Objects():
         with open('res/nomesfeminino.up.csv', encoding="cp1252") as f:
             reader = csv.reader(f, delimiter=',')
             for row in reader:
-                if name == row[1]: # if the username shall be on column 3 (-> index 2)
+                if name == row[1]:
                     return 'female'
 
         return 'male'
-        # Se o ultimo caracter do nome for 'a' então é feminino caso contrario é masculino.
-        #return "female" if name[-1] == 'a' else "male"
     
     
     @staticmethod
@@ -166,3 +179,23 @@ class Objects():
         else:
             # Significa que já avistamos pelo menos 2 pessoas do sexo feminino e portanto devolvemos a penultima avistada. 
             return Objects._lastTwoFemales[1]
+        
+    @staticmethod
+    def getListOfPeople():
+        """
+        Devolve a lista de pessoas encontradas.
+
+        Returns:
+            list[tuple[str, str]]: Pessoas encontradas
+        """
+        return Objects._people
+    
+    @staticmethod
+    def getListOfObjects():
+        """
+        Devolve a lista de objetos encontrados.
+
+        Returns:
+            list[tuple[str, str]]: Objetos encontrados
+        """
+        return Objects._objects
