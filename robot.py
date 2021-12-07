@@ -3,6 +3,36 @@ from utils import Utils
 import time
 
 class Robot():
+    """
+    [summary]
+
+    TODO:
+    [ ]: Inicializar as variaveis
+        * [X] DIR
+        * [X] last & curr Position
+        * [X] last & curr Battery
+        * [X] last & curr Time
+        * [X] last & curr Velocity
+        * [ ] functions
+    [ ]: Implement manager functions
+        * [X] Positions 
+            - [X] getPosition()
+            - [X] getAdaptedPosition()
+            - [X] getDirection()
+            - [X] setPosition()
+            - [X] isDifferentPosition()
+        * [X] Velocity
+            - [X] updateVelocity()
+        * [X] Battery
+            - [X] setBattery()
+        * [ ] Functions
+            - [X] refreshFunctions()
+            - [ ] predictTimeFromDistance()
+            - [ ] predictTimeFromBattery()
+    [X]: Implement Robot manager functions
+        * [X] updateRobot()
+    """
+    
     DIR = {
         "STATIC"   : 0,
         "RIGHT"    : 1,
@@ -11,23 +41,23 @@ class Robot():
         "DOWN"     : 4,
     }
     
-    _lastPosition = tuple(int(), int())
-    _currPosition = tuple(int(), int())
+    _lastPosition = (100, 100)
+    _currPosition = (100, 100)
     
-    _lastBattery = int()
-    _currBattery = int()
+    _lastBattery = 0
+    _currBattery = 0
     
     _lastTime = time.time()
     _currTime = time.time()
     
-    _currVelocity = float()
-    _lastVelocity = float()
+    _currVelocity = 0.0
+    _lastVelocity = 0.0
     
-    _functions = {
-        "VelocityBatery": Utils.LinearFunction(),
-        "VelocityTime"  : Utils.LinearFunction(),
-        "BateryTime"    : Utils.LinearFunction()
-    }
+    # _functions = {
+    #     "VelocityBatery": Utils.LinearFunction(),
+    #     "VelocityTime"  : Utils.LinearFunction(),
+    #     "BateryTime"    : Utils.LinearFunction()
+    # }
     
     
     @staticmethod
@@ -99,10 +129,14 @@ class Robot():
     @staticmethod
     def updateRobot(position: tuple[int, int], battery: int):
         """Atualiza o estado completo do robot tendo em conta a posição atual e a bateria restante."""
+        # Atualiza a bateria
         Robot.setBattery(battery)
+        # Atualiza a posição atual
         Robot.setPosition(position)
+        # Atualiza a velociadade atual
         Robot.updateVelocity()
-        Robot.updateFunctions()
+        # Atualiza as linear and nonLinear functions
+        # Robot.updateFunctions() 
 
     # TODO: 
     # * REWRITE THE LINEAR FUNCTIONS INTO A LINEAR REGRESSION (using `from sklearn.linear_model import LinearRegression`)

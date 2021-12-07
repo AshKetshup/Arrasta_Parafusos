@@ -10,6 +10,7 @@ colocar aqui os nomes e número de aluno:
 
 """
 from objectManager import Objects
+from enviroment import Enviroment
 import time
 
 
@@ -26,8 +27,7 @@ def work(posicao, bateria, objetos) -> None:
         objetos (list of string): Nome do(s) objeto(s) próximos do agente, uma string
     """
     posicao = tuple(posicao)
-    
-    
+    Enviroment.update(posicao, objetos)    
     pass
 
 	
