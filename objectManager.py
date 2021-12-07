@@ -1,5 +1,9 @@
 from customException import SimpleException
 from typing import overload
+import numpy as np
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction import DictVectorizer
+import csv
 
 class Objects():
     """
@@ -108,7 +112,7 @@ class Objects():
     @staticmethod
     def sexCheck(name: str) -> str:
         """
-        * Indica se o sexo do objeto pelo ultimo caracter no nome do objeto.
+        * Indica se o sexo do objeto se o nome estiver dentro do dataset do registo de nomes proprios femininos do anos de 2017 em Portugal.
 
         Args:
             `name` (str): nome do objeto
@@ -116,8 +120,15 @@ class Objects():
         Returns:
             str: sexo do nome do objeto = "female" | "male".
         """
+        with open('res/nomesfeminino.up.csv', encoding="cp1252") as f:
+            reader = csv.reader(f, delimiter=',')
+            for row in reader:
+                if name == row[1]: # if the username shall be on column 3 (-> index 2)
+                    return 'female'
+
+        return 'male'
         # Se o ultimo caracter do nome for 'a' então é feminino caso contrario é masculino.
-        return "female" if name[-1] == 'a' else "male"
+        #return "female" if name[-1] == 'a' else "male"
     
     
     @staticmethod
