@@ -27,7 +27,7 @@ def work(posicao, bateria, objetos) -> None:
         objetos (list of string): Nome do(s) objeto(s) próximos do agente, uma string
     """
     posicao = tuple(posicao)
-    Enviroment.update(posicao, objetos)    
+    Enviroment.update(posicao, objetos)
     pass
 
 	

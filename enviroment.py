@@ -231,4 +231,4 @@ class Enviroment():
                         Enviroment._zoneMap.nodes[Enviroment._currentZone][obj[0]] = [(coordinates, obj[1])]
                 
                 # Adcionamos o objeto caso seja novo
-                Objects.add(obj[0], obj[1])
+                Objects.add(obj)
