@@ -4,6 +4,8 @@ from objectManager import Objects
 from robot import Robot
 import networkx as nx
 
+from utils import Utils
+
 class Zone():
     """
     Classe usada para armazenar e manipular dados de Zona.
@@ -163,33 +165,70 @@ class Enviroment():
         """
         return Enviroment._currentZone
     
+    
     @staticmethod
-    def updateZoneMap(newRoom: int):
+    def getEdgeBetweenRoomAndDoor(zFrom: Zone, zTo: Zone):
+        pass #TODO
+    
+    @staticmethod
+    def getMidPoint(zone) -> tuple[int, int]:
+        return Utils.calcMidPoint()
+    
+    @staticmethod
+    def updateMap() -> None:
+        robotPos = Robot.getPosition()
+        
+        midPoint = Enviroment.getMidPoint(Enviroment._currentZone)
+        distance = Utils.calcDistance(midPoint, robotPos)
+        Enviroment._zoneMap\
+            .add_edges_from(Enviroment.getEdgeBetweenRoomAndDoor(Enviroment._currentZone, Enviroment._lastVisited)) #KEEP
+    
+    @staticmethod
+    def updateZoneMap(newZone: int):
         """TODO: COMENTAR E COMPLETAR"""
-        if newRoom:
-            if Enviroment._currentRoom != newRoom:
-                Enviroment._zoneMap.add_edge(newRoom, Enviroment._currentRoom)
-                # Enviroment.updateMap()
+        if newZone:
+            if Enviroment._currentZone != newZone:
+                Enviroment._currentZone, Enviroment._lastVisited = newZone, Enviroment._currentZone
+                Enviroment._zoneMap.add_edge(newZone, Enviroment._currentZone)
+                Enviroment.updateMap()
     
     
     @staticmethod
     def update(coordinates: tuple[int, int], objects: list[str] = []) -> None:
+        # Para cada zona
         for i, zone in enumerate(Enviroment._zones):
+            # Verificamos se estamos atualmente nela.
             if zone.isIn(coordinates):
                 Enviroment.updateZoneMap(i)
                 break
         
+        # Se verificarmos existirem objetos
         if objects:
+            # Para cada objeto
             for obj in objects:
+                # Vamos criar o objeto (Separando num tuplo pelo tipo e nome)
                 obj = tuple(obj.split(Objects.SPLITTER, 1))
+                
+                # Se o objeto não estiver já guardado.
                 if not Objects.isIn(obj):
+                    # Tentamos:
                     try:
+                        # Obtemos os objetos atuais
                         currentObjects = [n[1] for n in Enviroment._zoneMap.nodes[Enviroment._currentZone][obj[0]]]
+                        
+                        # Se o nome do objeto não estiver nos objetos atuais:
                         if obj[1] not in currentObjects:
-                            Enviroment._zoneMap.nodes[Enviroment._currentZone][obj[0]].append(
-                                Robot.getAdaptedPosition(), 
-                                obj[1]
-                            )
+                            # Vamos ao grafo  
+                            #     no node da zona atual (dicionario), No indice do tipo de objeto
+                            #     damos append nesse indice a posição adaptada do objeto e respetivo nome.
+                            Enviroment._zoneMap\
+                                .nodes[Enviroment._currentZone][obj[0]]\
+                                .append(Robot.getAdaptedPosition(), obj[1])
+                    
+                    # Ao levantar KeyError (Não foi encontrado a chave `obj[0]` no dicionario)
                     except KeyError:
+                        # Atribuimos ao node da zona atual, no obj[0] atribuimos as coordenadas e o nome do objeto.
                         Enviroment._zoneMap.nodes[Enviroment._currentZone][obj[0]] = [(coordinates, obj[1])]
-                Enviroment.add(obj)
+                
+                # Adcionamos o objeto caso seja novo
+                Objects.add(obj[0], obj[1])
