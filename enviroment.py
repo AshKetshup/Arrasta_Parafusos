@@ -199,7 +199,7 @@ class Enviroment():
         for i, zone in enumerate(Enviroment._zones):
             # Verificamos se estamos atualmente nela.
             if zone.isIn(coordinates):
-                Enviroment.updateZoneMap(i)
+                # Enviroment.updateZoneMap(i)
                 break
         
         # Se verificarmos existirem objetos
@@ -210,25 +210,102 @@ class Enviroment():
                 obj = tuple(obj.split(Objects.SPLITTER, 1))
                 
                 # Se o objeto não estiver já guardado.
-                if not Objects.isIn(obj):
-                    # Tentamos:
-                    try:
-                        # Obtemos os objetos atuais
-                        currentObjects = [n[1] for n in Enviroment._zoneMap.nodes[Enviroment._currentZone][obj[0]]]
-                        
-                        # Se o nome do objeto não estiver nos objetos atuais:
-                        if obj[1] not in currentObjects:
-                            # Vamos ao grafo  
-                            #     no node da zona atual (dicionario), No indice do tipo de objeto
-                            #     damos append nesse indice a posição adaptada do objeto e respetivo nome.
-                            Enviroment._zoneMap\
-                                .nodes[Enviroment._currentZone][obj[0]]\
-                                .append(Robot.getAdaptedPosition(), obj[1])
-                    
-                    # Ao levantar KeyError (Não foi encontrado a chave `obj[0]` no dicionario)
-                    except KeyError:
-                        # Atribuimos ao node da zona atual, no obj[0] atribuimos as coordenadas e o nome do objeto.
-                        Enviroment._zoneMap.nodes[Enviroment._currentZone][obj[0]] = [(coordinates, obj[1])]
+                # if not Objects.isIn(obj):
+                #     # Tentamos:
+                #     try:
+                #         # Obtemos os objetos atuais
+                #         currentObjects = [n[1] for n in Enviroment._zoneMap.nodes[Enviroment._currentZone][obj[0]]]
+                #         
+                #         # Se o nome do objeto não estiver nos objetos atuais:
+                #         if obj[1] not in currentObjects:
+                #             # Vamos ao grafo  
+                #             #     no node da zona atual (dicionario), No indice do tipo de objeto
+                #             #     damos append nesse indice a posição adaptada do objeto e respetivo nome.
+                #             Enviroment._zoneMap\
+                #                 .nodes[Enviroment._currentZone][obj[0]]\
+                #                 .append(Robot.getAdaptedPosition(), obj[1])
+                #     
+                #     # Ao levantar KeyError (Não foi encontrado a chave `obj[0]` no dicionario)
+                #     except KeyError:
+                #         # Atribuimos ao node da zona atual, no obj[0] atribuimos as coordenadas e o nome do objeto.
+                #         Enviroment._zoneMap.nodes[Enviroment._currentZone][obj[0]] = [(coordinates, obj[1])]
                 
                 # Adcionamos o objeto caso seja novo
-                Objects.add(obj[0], obj[1])
+                Objects.add((obj[0], obj[1]))
+
+    @staticmethod
+    def getProbabilityOfAdultInZoneIfThereIsChildButNoShopcar():
+        ''''Determina a probabilidade de encontrar um adulto na zona, 
+        sabedo que está lá uma criança, mas nao um carrinho'''
+
+        #Contabiliza as zonas encontradas, as zonas que contêm adulto, criança mas não carrinho
+        # e as zonas que têm criança mas não têm carrinho
+        total_zones                               = 0
+        zones_with_adult_and_child_but_no_shopcar = 0
+        zones_with_child_but_no_shopcar           = 0
+
+        '''Efetuar ciclo para verificar zona no grafo e incrementar as variaveis acima 
+        
+        
+        
+        
+        '''
+
+        #Probabilidade de existir zona com adulto,criança mas nao carrinho
+        prob_zones_with_adult_and_child_but_no_shopcar = zones_with_adult_and_child_but_no_shopcar / total_zones
+
+        #Probabilidade de existir zona com criança mas nao carrinho
+        prob_zones_with_child_but_no_shopcar = zones_with_child_but_no_shopcar / total_zones
+
+        #Probabilidade Condicionada
+        return prob_zones_with_adult_and_child_but_no_shopcar / prob_zones_with_child_but_no_shopcar                
+
+
+    @staticmethod
+    def getProbabilityOfNextPersonBeAChild():
+        '''Determina a probabilidade de a proxima pessoa ser uma criança'''
+
+        #Contabiliza os "objectos" encontrados (crianças, adultos e carrinhos)
+        total_objects = 0
+
+        # Contabiliza os "objetos" agrupando-os de forma individual
+
+        # Let:
+        #   A = Adult
+        #   B = Shopcar
+        #   C = Child
+        #   n = NOT
+        #   and, used to simulate the following P(B,C)
+        # Example: LCnX = Adult and Shopcar and NOT Child
+
+        object_A = 0
+        object_B = 0
+
+        
+        #A probabilidade que estamos a calcular pode-se tradizir da seguinte forma.
+        #P(C) = P(C,B) / P(B)
+        
+        #Assim sendo, o robo só precisa de recolher as probabilidades de A e B
+        #A nossa linha de raciocinio esta devidamente clarificada no pdf do relatorio
+
+        '''Efetuar ciclo para verificar zona no grafo e incrementar as variaveis acima 
+        
+        
+        
+        
+        '''
+        
+        #Calculo das probabilidades
+        prob_adult = object_A / total_objects
+        prob_shopcar = object_B / total_objects
+
+        #0.8 e o 0.1 são valores provenienetes da tabela dada no enunciadoe são respetivamente
+        #prob_C_knowing_AB = 0.8 e prob_C_knowing_nAB = 0.1  
+        prob_BAC = (prob_adult * prob_shopcar * 0.8)
+        prob_BnAC = ((1 - prob_adult) * prob_shopcar * 0.1)
+        prob_C_and_B = prob_BAC + prob_BnAC
+
+        #Probabilidade pretendida
+        return prob_C_and_B / prob_shopcar
+
+

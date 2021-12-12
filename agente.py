@@ -44,7 +44,9 @@ def resp2():
 
 
 def resp3():
-    """Qual o caminho para a papelaria?"""
+    """Qual o caminho para a papelaria?
+        Sugestao: podemos usar o algoritmo de pesquisa aster...(penso que o nome é assim). Devolve o caminho mais otimazado num grafo selecionando um ponto de partida e chegada. Segunda aula
+    """
     pass
 
 
