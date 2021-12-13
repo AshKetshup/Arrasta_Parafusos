@@ -54,7 +54,7 @@ class Objects():
     OBJ = {
         "ADULT"    : "adulto",
         "CHILD"    : "criança",
-        "EMPLOYEE" : "funcionario",
+        "EMPLOYEE" : "funcionário",
         "CART"     : "carrinho",
         "ZONE"     : "zona",
         "CASHIER"  : "caixa"

@@ -30,6 +30,7 @@ def work(posicao, bateria, objetos) -> None:
     posicao = tuple(posicao)
     # Se a bateria for 0 o robot para de recolher dados
     if bateria:
+        Robot.updateRobot(posicao, bateria)
         Enviroment.update(posicao, objetos)
 
 	
