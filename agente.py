@@ -11,6 +11,7 @@ colocar aqui os nomes e número de aluno:
 """
 from objectManager import Objects
 from enviroment import Enviroment
+from robot import Robot
 import time
 
 
@@ -27,8 +28,9 @@ def work(posicao, bateria, objetos) -> None:
         objetos (list of string): Nome do(s) objeto(s) próximos do agente, uma string
     """
     posicao = tuple(posicao)
-    Enviroment.update(posicao, objetos)    
-    pass
+    # Se a bateria for 0 o robot para de recolher dados
+    if bateria:
+        Enviroment.update(posicao, objetos)
 
 	
 def resp1():
@@ -56,8 +58,17 @@ def resp4():
 
 
 def resp5():
-    """Quanto tempo achas que demoras a ir de onde estás até à caixa?"""    
-    pass
+    """Quanto tempo achas que demoras a ir de onde estás até à caixa?"""
+    try:
+        # 1o: calcular distancia
+        distancia = 0
+        
+        # 2o: calcular o tempo previsto usando a distancia
+        timeP = Robot.predictTimeFromDistance(distancia)
+        
+        print(f"O robot prevê a possibilidade de demorar-mos ao precorrer {distancia} de distancia em {timeP}s\n")
+    except Robot.NotAvailablePrediction as e:
+        print(e.what())
 
 
 def resp6():
@@ -65,8 +76,19 @@ def resp6():
     Quanto tempo achas que falta até ficares com metade da bateria que tens 
     agora?
     """    
-    pass
+    try:
+        halfBattery = Robot.getCurrentBattery()/2
+        currTime = Robot.getCurrentTime()
+        predictedTime = Robot.predictTimeFromBattery(halfBattery)
+        
+        timeP = predictedTime - currTime
+        
+        print(f"O robot prevê a possibilidade de chegarmos ao nivel de bateria '{halfBattery}' daqui a {timeP}s\n")
+    except Robot.NotAvailablePrediction as e:
+        print(e.what())
 
+    
+    
 
 def resp7():
     """Qual é a probabilidade da próxima pessoa a encontrares ser uma criança?"""
