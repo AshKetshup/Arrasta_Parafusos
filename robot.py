@@ -1,9 +1,9 @@
-from customException import SimpleException
 from sklearn.linear_model import LinearRegression
-from objectManager import Objects
-from utils import Utils
 import numpy as np
 import time
+
+from objectManager import Objects
+from utils import Utils, SimpleException
 
 class Robot():
     """

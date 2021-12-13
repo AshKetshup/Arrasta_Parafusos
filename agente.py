@@ -12,7 +12,7 @@ colocar aqui os nomes e número de aluno:
 from objectManager import Objects
 from enviroment import Enviroment
 from robot import Robot
-import time
+from zone import Zone
 
 
 def work(posicao, bateria, objetos) -> None:
@@ -43,8 +43,11 @@ def resp1():
 
 def resp2():
     """Em que tipo de zona estás agora?"""
-    pass
-
+    try:
+        print(Enviroment.getCurrentZone().getType())
+    except Zone.ZoneNotDefinedException as e:
+        print(e.what())
+    
 
 def resp3():
     """Qual o caminho para a papelaria?"""
@@ -59,7 +62,7 @@ def resp4():
 def resp5():
     """Quanto tempo achas que demoras a ir de onde estás até à caixa?"""
     try:
-        # 1o: calcular distancia
+        # 1o: TODO: calcular distancia
         distancia = 0
         
         # 2o: calcular o tempo previsto usando a distancia
