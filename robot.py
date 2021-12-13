@@ -99,10 +99,13 @@ class Robot():
         
         return direction
     
-    
+    @staticmethod
+    def getPosition() -> tuple[int, int]:
+        return Robot._currPosition
+        
     @staticmethod
     def getAdaptedPosition() -> tuple[int, int]:
-        position = Robot.getCurrentPosition()
+        position = Robot.getPosition()
         direction = Robot.getDirection()
         if Robot.DIR["STATIC"] in direction:
             return position
@@ -111,11 +114,6 @@ class Robot():
             position[0] + Objects.SIZE["OBJECT"] if Robot.DIR["RIGHT"] in direction else -Objects.SIZE["OBJECT"],
             position[1] + Objects.SIZE["OBJECT"] if Robot.DIR["DOWN"]  in direction else -Objects.SIZE["OBJECT"]
         )
-    
-    
-    @staticmethod
-    def getPosition() -> tuple[int, int]:
-        return Robot._currPosition
     
     @staticmethod
     def setBattery(battery: int) -> None:
