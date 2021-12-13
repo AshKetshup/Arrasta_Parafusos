@@ -13,7 +13,7 @@ class Objects():
         `Objects.NotEnoughFemalesException`: Excepção usada para descrever quando não foram avistadas pessoas do sexo 
         feminino suficientes.
         
-    TODO:
+    CheckList:
     [X]: Inicializar as variaveis de classe:
         * [X] _people
         * [X] _objects

@@ -109,6 +109,13 @@ class Zone():
             raise Zone.ZoneAlreadyDefinedException(Zone.ERROR_ZONE_ALREADY_DEFINED, myself())
         self._zoneType = zoneType
 
+    
+    def getXRange(self) -> tuple[int, int]:
+        return self._xRange
+    
+    def getYRange(self) -> tuple[int, int]:
+        return self._yRange
+
 
 class Enviroment():
     _zones = [
@@ -168,24 +175,23 @@ class Enviroment():
     
     @staticmethod
     def getEdgeBetweenRoomAndDoor(zFrom: Zone, zTo: Zone):
-        pass #TODO
+        pass #TODO: DO THIS
     
     @staticmethod
-    def getMidPoint(zone) -> tuple[int, int]:
-        return Utils.calcMidPoint()
+    def getMidPoint(zone: Zone) -> tuple[int, int]:
+        return Utils.calcMidPoint(zone.getXRange(), zone.getYRange())
     
     @staticmethod
     def updateMap() -> None:
+        # TODO: FIND THE BUG
         robotPos = Robot.getPosition()
         
-        midPoint = Enviroment.getMidPoint(Enviroment._currentZone)
+        midPoint = Enviroment.getMidPoint(Enviroment._zones[Enviroment._currentZone])
         distance = Utils.calcDistance(midPoint, robotPos)
-        Enviroment._zoneMap\
-            .add_edges_from(Enviroment.getEdgeBetweenRoomAndDoor(Enviroment._currentZone, Enviroment._lastVisited)) #KEEP
+        Enviroment._zoneMap.add_edges_from(Enviroment.getEdgeBetweenRoomAndDoor(Enviroment._currentZone, Enviroment._lastVisited)) #KEEP
     
     @staticmethod
     def updateZoneMap(newZone: int):
-        """TODO: COMENTAR E COMPLETAR"""
         if newZone:
             if Enviroment._currentZone != newZone:
                 Enviroment._currentZone, Enviroment._lastVisited = newZone, Enviroment._currentZone

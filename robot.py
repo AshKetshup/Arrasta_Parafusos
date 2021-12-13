@@ -1,20 +1,23 @@
+from customException import SimpleException
+from sklearn.linear_model import LinearRegression
 from objectManager import Objects
 from utils import Utils
+import numpy as np
 import time
 
 class Robot():
     """
     [summary]
 
-    TODO:
-    [ ]: Inicializar as variaveis
+    CheckList:
+    [X]: Inicializar as variaveis
         * [X] DIR
         * [X] last & curr Position
         * [X] last & curr Battery
         * [X] last & curr Time
         * [X] last & curr Velocity
-        * [ ] functions
-    [ ]: Implement manager functions
+        * [X] functions
+    [X]: Implement manager functions
         * [X] Positions 
             - [X] getPosition()
             - [X] getAdaptedPosition()
@@ -25,10 +28,12 @@ class Robot():
             - [X] updateVelocity()
         * [X] Battery
             - [X] setBattery()
-        * [ ] Functions
-            - [X] refreshFunctions()
-            - [ ] predictTimeFromDistance()
-            - [ ] predictTimeFromBattery()
+        * [X] Functions
+            - [X] updateFunctions()
+            - [X] predictVelocityFromTime()
+            - [X] predictVelocityFromBattery()
+            - [X] predictTimeFromBattery()
+            - [X] predictTimeFromDistance()
     [X]: Implement Robot manager functions
         * [X] updateRobot()
     """
@@ -47,17 +52,28 @@ class Robot():
     _lastBattery = 0
     _currBattery = 0
     
+    _last100Time = time.time()
     _lastTime = time.time()
     _currTime = time.time()
     
     _currVelocity = 0.0
     _lastVelocity = 0.0
     
-    # _functions = {
-    #     "VelocityBatery": Utils.LinearFunction(),
-    #     "VelocityTime"  : Utils.LinearFunction(),
-    #     "BateryTime"    : Utils.LinearFunction()
-    # }
+    _functions = {
+        "VelocityBattery" : (LinearRegression(), []),
+        "VelocityTime"    : (LinearRegression(), []),
+        "BatteryTime"     : (LinearRegression(), [])
+    }
+    
+    ERROR_NOT_AVAILABLE_PREDICTION = "Não é possivel efetuar a previsão"
+    class NotAvailablePrediction(SimpleException):
+        """
+        Excepção indicada para quando não é possivel efetuar a previsão.
+
+        Inherits:
+            `SimpleException` (class): Very basic exception
+        """
+        pass
     
     
     @staticmethod
@@ -105,7 +121,14 @@ class Robot():
     def setBattery(battery: int) -> None:
         Robot._currBattery, Robot._lastBattery = battery, Robot._currBattery
         
+    @staticmethod
+    def getCurrentBattery() -> int:
+        return Robot._currBattery
         
+    @staticmethod
+    def getCurrentTime() -> int:
+        return Robot._currTime    
+    
     @staticmethod
     def setPosition(position: tuple[int, int]) -> None:
         Robot._currPosition, Robot._lastPosition = position, Robot._currPosition
@@ -119,12 +142,18 @@ class Robot():
                 Utils.calcDistance(Robot._lastPosition, Robot._currPosition) / (Robot._currTime - Robot._lastTime), 
                 Robot._currVelocity
             )
-            
+
+
     @staticmethod
     def updateFunctions() -> None:
-        if Robot._currBattery > Robot._lastBattery:
-            map(lambda x: x.reset(), Robot._functions)
-
+        if Robot._currBattery == 100:
+            Robot._last100Time = time.time()
+        
+        # Atualiza as informações
+        Robot._functions["VelocityBattery"][1].append((Robot._currVelocity, Robot._currBattery))
+        Robot._functions["VelocityTime"][1].append((Robot._currVelocity, Robot._currTime))
+        Robot._functions["BatteryTime"][1].append((Robot._currBattery, Robot._currTime))
+    
     
     @staticmethod
     def updateRobot(position: tuple[int, int], battery: int):
@@ -136,8 +165,88 @@ class Robot():
         # Atualiza a velociadade atual
         Robot.updateVelocity()
         # Atualiza as linear and nonLinear functions
-        # Robot.updateFunctions() 
+        Robot.updateFunctions()
+        
+        
+    @staticmethod
+    def predictTimeFromBattery(battery: int) -> float:
+        """
+        Estima através do valor dado de bateria quanto tempo falta em para o atingir.
 
-    # TODO: 
-    # * REWRITE THE LINEAR FUNCTIONS INTO A LINEAR REGRESSION (using `from sklearn.linear_model import LinearRegression`)
-    # * CONTINUE
+        Args:
+            battery (int): Nivel de bateria requesitado
+
+        Returns:
+            float: Tempo até ao nivel da bateria ser alcançado.
+        """
+        if not len(Robot._functions["BatteryTime"][1]) or not Robot._currBattery:
+            raise Robot.NotAvailablePrediction(Robot.ERROR_NOT_AVAILABLE_PREDICTION)
+
+        value = np.array(battery).reshape(-1, 1)
+           
+        # Inicializar LinearRegression        
+        f = (np.array([i for i, _ in Robot._functions["BatteryTime"][1]]).reshape(-1, 1),
+             np.array([j for _, j in Robot._functions["BatteryTime"][1]]).reshape(-1, 1))
+        
+        regression = Robot._functions["BatteryTime"][0].fit(f[0], f[1])
+        
+        return regression.predict(value)[0][0]
+    
+    
+    @staticmethod
+    def predictVelocityFromBattery(battery: int) -> float:
+        """
+        Estima através do valor dado de bateria qual a velocidade no ponto.
+
+        Args:
+            battery (int): Nivel de bateria requesitado
+
+        Returns:
+            float: Tempo até ao nivel da bateria ser alcançado.
+        """
+        if not len(Robot._functions["VelocityBattery"][1]) or not Robot._currBattery:
+            raise Robot.NotAvailablePrediction(Robot.ERROR_NOT_AVAILABLE_PREDICTION)
+
+        value = np.array(battery).reshape(-1, 1)
+           
+        # Inicializar LinearRegression        
+        f = (np.array([i for i, _ in Robot._functions["VelocityBattery"][1]]).reshape(-1, 1),
+             np.array([j for _, j in Robot._functions["VelocityBattery"][1]]).reshape(-1, 1))
+        
+        regression = Robot._functions["VelocityTime"][0].fit(f[0], f[1])
+        
+        return regression.predict(value)[0][0]
+    
+    
+    @staticmethod
+    def predictVelocityFromTime(eTime: int) -> float:
+        """
+        Estima através do valor dado de bateria quanto tempo falta em para o atingir.
+
+        Args:
+            eTime (int): Tempo desde a bateria a 100% pedido
+
+        Returns:
+            float: Tempo até ao nivel da bateria ser alcançado.
+        """
+        if not len(Robot._functions["VelocityTime"][1]) or not Robot._currBattery:
+            raise Robot.NotAvailablePrediction(Robot.ERROR_NOT_AVAILABLE_PREDICTION)
+
+        value = np.array(eTime).reshape(-1, 1)
+           
+        # Inicializar LinearRegression        
+        f = (np.array([i for i, _ in Robot._functions["VelocityTime"][1]]).reshape(-1, 1),
+             np.array([j for _, j in Robot._functions["VelocityTime"][1]]).reshape(-1, 1))
+        
+        regression = Robot._functions["VelocityTime"][0].fit(f[0], f[1])
+        
+        return regression.predict(value)[0][0]
+    
+    
+    @staticmethod
+    def predictTimeFromDistance(distance: int) -> float:
+        vf = Robot.predictVelocityFromTime(time.time() - Robot._last100Time)
+        vi = Robot.predictVelocityFromTime(0)
+        
+        elapsedTime = 2 * distance / (vf + vi)
+        return elapsedTime
