@@ -9,6 +9,7 @@ colocar aqui os nomes e número de aluno:
 43464, Cristiano Santos
 
 """
+from math import floor
 from objectManager import Objects
 from enviroment import Enviroment
 from robot import Robot
@@ -77,15 +78,20 @@ def resp6():
     """
     Quanto tempo achas que falta até ficares com metade da bateria que tens 
     agora?
-    """    
+    """
+    # TODO FIND FUCKING BUG
     try:
-        halfBattery = Robot.getCurrentBattery()/2
-        currTime = Robot.getCurrentTime()
+        halfBattery = floor(Robot.getCurrentBattery()/2)
+        currTime = Robot.getCurrentTime() - Robot._last100Time
         predictedTime = Robot.predictTimeFromBattery(halfBattery)
         
-        timeP = predictedTime - currTime
+        # print(f"Tempo atual {currTime}")
+        # print(f"Tempo previsto {predictedTime}")
         
-        print(f"O robot prevê a possibilidade de chegarmos ao nivel de bateria '{halfBattery}' daqui a {timeP}s\n")
+        timeP = predictedTime - currTime
+        # print(f"Tempo previsto {timeP}")
+        
+        print(f"O robot prevê a possibilidade de chegarmos ao nivel de bateria '{halfBattery}' daqui a {timeP:04f}s\n")
     except Robot.NotAvailablePrediction as e:
         print(e.what())
 
