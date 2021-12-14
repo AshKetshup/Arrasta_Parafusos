@@ -1,9 +1,8 @@
-from customException import SimpleException
-from typing import overload
-import numpy as np
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction import DictVectorizer
 import csv
+
+from utils import SimpleException
+from zone import Zone
+
 
 class Objects():
     """
@@ -81,7 +80,7 @@ class Objects():
     
 
     @staticmethod
-    def add(obj: tuple[str, str]) -> None:
+    def add(obj: tuple[str, str], currentZone: Zone) -> None:
         """
         * Adiciona o par (categoria, nome) se o objeto for novo.
         * Atualiza, caso necessario a queue das 2 ultimas pessoas do sexo feminino.
@@ -100,6 +99,10 @@ class Objects():
             else:
                 # Vamos adicionar ao à lista de objetos.
                 Objects._objects.append(obj)
+                # Se a categoria for uma zona:
+                if obj[0] in Objects.CATEGORY["LOCALS"]:
+                    # Vamos dar set na zona atual
+                    currentZone.setType(obj[1])
         
         # Se o objeto for uma pessoa do sexo feminino: 
         if obj[0] in Objects.CATEGORY["PEOPLE"] and Objects.sexCheck(obj[1]) == "female":
