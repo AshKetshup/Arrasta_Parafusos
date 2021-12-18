@@ -237,7 +237,7 @@ class Enviroment():
         for edge in edges:
             # Calculamos a distancia entre o Robot e o midPoint
             distance = Utils.calcDistance(
-                Enviroment._zoneMap[edge][Enviroment._map["MIDPOINT"]], 
+                Enviroment._zoneMap.nodes[edge][Enviroment._map["MIDPOINT"]], 
                 Robot.getPosition()
             )
             # E adicionamos a aresta ao Robot com a distancia correspondente como peso.
