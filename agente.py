@@ -82,16 +82,9 @@ def resp6():
     # TODO FIND FUCKING BUG
     try:
         halfBattery = floor(Robot.getCurrentBattery()/2)
-        currTime = Robot.getCurrentTime() - Robot._last100Time
-        predictedTime = Robot.predictTimeFromBattery(halfBattery)
+        pTime = Robot.predictTimeFromBattery(halfBattery)
         
-        # print(f"Tempo atual {currTime}")
-        # print(f"Tempo previsto {predictedTime}")
-        
-        timeP = predictedTime - currTime
-        # print(f"Tempo previsto {timeP}")
-        
-        print(f"O robot prevê a possibilidade de chegarmos ao nivel de bateria '{halfBattery}' daqui a {timeP:04f}s\n")
+        print(f"O robot prevê a possibilidade de chegarmos ao nivel de bateria '{halfBattery}' daqui a {pTime:04f}s\n")
     except Robot.NotAvailablePrediction as e:
         print(e.what())
 
