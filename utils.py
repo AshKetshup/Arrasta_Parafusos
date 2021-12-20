@@ -97,3 +97,8 @@ class Utils():
     @staticmethod
     def calcMidPoint(xRange: tuple[int, int], yRange: tuple[int, int]) -> tuple[int, int]:
         return ((xRange[0] + xRange[1]) / 2, (yRange[0] + yRange[1]) / 2)
+
+    @staticmethod
+    def timeToStr(t):
+        """Formata um dado tempo em segundos e milissegundos."""
+        return "{0:3d} segundos e {1:3d} milissegundos".format(int(t), int((t - int(t)) * 1000))    

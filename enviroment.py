@@ -1,5 +1,6 @@
 import networkx as nx
 from networkx.classes.graph import Graph
+from objectManager import Objects
 
 from robot import Robot
 from zone import Zone
@@ -237,7 +238,7 @@ class Enviroment():
         for edge in edges:
             # Calculamos a distancia entre o Robot e o midPoint
             distance = Utils.calcDistance(
-                Enviroment._zoneMap[edge][Enviroment._map["MIDPOINT"]], 
+                Enviroment._zoneMap.nodes[edge][Enviroment._map["MIDPOINT"]], 
                 Robot.getPosition()
             )
             # E adicionamos a aresta ao Robot com a distancia correspondente como peso.
@@ -251,3 +252,80 @@ class Enviroment():
         except:
             # Já foi previamente removido
             pass
+
+    
+    @staticmethod
+    def getProbabilityOfAdultInZoneIfThereIsChildButNoShopcar():
+        ''''Determina a probabilidade de encontrar um adulto na zona, 
+        sabedo que está lá uma criança, mas nao um carrinho'''
+
+        #Contabiliza as zonas encontradas, as zonas que contêm adulto, criança mas não carrinho
+        # e as zonas que têm criança mas não têm carrinho
+        total_zones                               = 0
+        zones_with_adult_and_child_but_no_shopcar = 0
+        zones_with_child_but_no_shopcar           = 0
+
+        '''Efetuar ciclo para verificar zona no grafo e incrementar as variaveis acima
+        for(zones, ) in Enviroment._infoMap.nodes(data=True):
+            if zones not in range(0,5):
+                total_zones+=1
+            if Objects   
+        '''
+        
+        #Probabilidade de existir zona com adulto,criança mas nao carrinho
+        prob_zones_with_adult_and_child_but_no_shopcar = zones_with_adult_and_child_but_no_shopcar / total_zones
+
+        #Probabilidade de existir zona com criança mas nao carrinho
+        prob_zones_with_child_but_no_shopcar = zones_with_child_but_no_shopcar / total_zones
+
+        #Probabilidade Condicionada
+        return prob_zones_with_adult_and_child_but_no_shopcar / prob_zones_with_child_but_no_shopcar                
+
+
+    @staticmethod
+    def getProbabilityOfNextPersonBeAChild():
+        '''Determina a probabilidade de a proxima pessoa ser uma criança'''
+
+        #Contabiliza os "objectos" encontrados (crianças, adultos e carrinhos)
+        total_objects = 0
+
+        # Contabiliza os "objetos" agrupando-os de forma individual
+
+        # Let:
+        #   A = Adult
+        #   B = Shopcar
+        #   C = Child
+        #   n = NOT
+        #   and, used to simulate the following P(B,C)
+        # Example: LCnX = Adult and Shopcar and NOT Child
+
+        object_A = 0
+        object_B = 0
+
+        
+        #A probabilidade que estamos a calcular pode-se tradizir da seguinte forma.
+        #P(C) = P(C,B) / P(B)
+        
+        #Assim sendo, o robo só precisa de recolher as probabilidades de A e B
+        #A nossa linha de raciocinio esta devidamente clarificada no pdf do relatorio
+
+        '''Efetuar ciclo para verificar zona no grafo e incrementar as variaveis acima 
+        
+        
+        
+        
+        '''
+        
+        #Calculo das probabilidades
+        prob_adult = object_A / total_objects
+        prob_shopcar = object_B / total_objects
+
+        #0.8 e o 0.1 são valores provenienetes da tabela dada no enunciadoe são respetivamente
+        #prob_C_knowing_AB = 0.8 e prob_C_knowing_nAB = 0.1  
+        prob_BAC = (prob_adult * prob_shopcar * 0.8)
+        prob_BnAC = ((1 - prob_adult) * prob_shopcar * 0.1)
+        prob_C_and_B = prob_BAC + prob_BnAC
+
+        #Probabilidade pretendida
+        return prob_C_and_B / prob_shopcar
+   

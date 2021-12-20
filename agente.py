@@ -10,10 +10,14 @@ colocar aqui os nomes e número de aluno:
 
 """
 from math import floor
+
+from networkx import utils
 from objectManager import Objects
 from enviroment import Enviroment
 from robot import Robot
+from utils import Utils
 from zone import Zone
+import networkx as nx
 
 
 def work(posicao, bateria, objetos) -> None:
@@ -52,6 +56,10 @@ def resp2():
 
 def resp3():
     """Qual o caminho para a papelaria?"""
+    
+    '''Determina se a papelaria ja foi encontrada até ao momento '''
+
+
     pass
 
 
@@ -63,13 +71,11 @@ def resp4():
 def resp5():
     """Quanto tempo achas que demoras a ir de onde estás até à caixa?"""
     try:
-        # 1o: TODO: calcular distancia
-        distancia = 0
-        
-        # 2o: calcular o tempo previsto usando a distancia
-        timeP = Robot.predictTimeFromDistance(distancia)
-        
-        print(f"O robot prevê a possibilidade de demorar-mos ao precorrer {distancia} de distancia em {timeP}s\n")
+        Enviroment.addRobotToGraph()
+        weight = nx.astar_path_length(Enviroment._zoneMap, Enviroment._map["ROBOT"], Enviroment.zoneToString(0))
+        Enviroment.delRobotFromGraph
+        return Robot.predictTimeFromDistance(weight)
+        print("Resposta: {0}\n".format(Utils.timeToStr(Robot.predictTimeFromDistance(weight))))
     except Robot.NotAvailablePrediction as e:
         print(e.what())
 
