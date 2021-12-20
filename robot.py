@@ -260,16 +260,27 @@ class Robot():
         Returns:
             float: Tempo até ao nivel da bateria ser alcançado.
         """
-        if not len(Robot._functions["BatteryTime"][1]):
+        if not len(Robot._functions["BatteryTime"][1]) or not battery:
             raise Robot.NotAvailablePrediction(Robot.ERROR_NOT_AVAILABLE_PREDICTION)
+        
+        
         
         # Inicializar non Linear Regression
         Robot._functions["BatteryTime"][1].sort()
-        x: Utils.NonLinearRegression = Robot._functions["BatteryTime"][0].generate(
-            Robot._functions["BatteryTime"][1],
-            250,
-            100
-        )
+        x: Utils.NonLinearRegression = Robot._functions["BatteryTime"][0]
+        
+        try:
+            x.generate(
+                Robot._functions["BatteryTime"][1],
+                x.coef, # valor do coeficiente
+                100     # valor de B (começa sempre em 100)
+            )
+        except AttributeError:
+            x.generate(
+                Robot._functions["BatteryTime"][1],
+                250,    # valor do coeficiente
+                100     # valor de B (começa sempre em 100)
+            )
         
         timeLast = x.predictX(battery, x.coef) - Robot._timeSince100
         

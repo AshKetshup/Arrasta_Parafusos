@@ -32,26 +32,27 @@ class Utils():
             pass
         
         def generate(self, xyList: list[tuple[float, float]], coef: float, b: float):
-            f = [[i for i, _ in xyList],
-                 [j for _, j in xyList]]
+            f = [[i for i, _ in xyList], # X
+                 [j for _, j in xyList]] # Y
             
+            # Atribuimos valores auxiliares
             self.coef = coef
             self.b = b
-            # y = np.array([self.predictY(x, self.coef) for x in f[0]])
-            # plt.plot(f[0], y)
 
+            # Calculamos os parametros que mais se adequem aos valores dados
             c, _ = curve_fit(self.predictY, f[0], f[1], self.coef)
             self.coef = c[0]
             
+            # Geramos o conjunto de pontos conforme a previsão dada
             y = np.array([self.predictY(x, self.coef) for x in f[0]])
-            plt.plot(f[0], y)
-            plt.plot([0, self.predictX(0, self.coef)], [0, 0])
-            plt.show()
             
             return self
             
         def getCoeficient(self) -> float:
             return self.coef
+        
+        def getB(self) -> float:
+            return self.b
             
         def predictX(self, y: float, coef: float) -> float:
             return (sqrt(-y + self.b) * coef)
