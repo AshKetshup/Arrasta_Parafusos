@@ -88,7 +88,7 @@ class Zone():
             str: Tipo da zona atual.
         """
         if not self._zoneType:
-            raise Zone.ZoneNotDefinedException(Zone.ERROR_ZONE_NOT_DEFINED, myself())
+            raise Zone.ZoneNotDefinedException(Zone.ERROR_ZONE_NOT_DEFINED)
         
         return self._zoneType
     

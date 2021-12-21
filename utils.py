@@ -1,5 +1,8 @@
 import inspect
-from operator import mul
+from matplotlib import pyplot as plt
+import numpy as np
+from math import sqrt
+from scipy.optimize import curve_fit
 
 myself = lambda: inspect.stack()[1][3]
 
@@ -24,6 +27,42 @@ class SimpleException(Exception):
 
 
 class Utils():
+    class NonLinearRegression():
+        def __init__(self):
+            pass
+        
+        def generate(self, xyList: list[tuple[float, float]], coef: float, b: float):
+            f = [[i for i, _ in xyList], # X
+                 [j for _, j in xyList]] # Y
+            
+            # Atribuimos valores auxiliares
+            self.coef = coef
+            self.b = b
+
+            # Calculamos os parametros que mais se adequem aos valores dados
+            c, _ = curve_fit(self.predictY, f[0], f[1], self.coef)
+            self.coef = c[0]
+            
+            # Geramos o conjunto de pontos conforme a previsão dada
+            y = np.array([self.predictY(x, self.coef) for x in f[0]])
+            
+            return self
+            
+        def getCoeficient(self) -> float:
+            return self.coef
+        
+        def getB(self) -> float:
+            return self.b
+            
+        def predictX(self, y: float, coef: float) -> float:
+            return (sqrt(-y + self.b) * coef)
+            
+        def predictY(self, x: float, coef: float) -> float:
+            return (- (x**2) / coef + self.b)
+        
+        def __str__(self) -> str:
+            return f"y = -(x**2)/{self.coef} + {self.b}"
+    
     class LinearRegression():
         def __init__(self):
             pass

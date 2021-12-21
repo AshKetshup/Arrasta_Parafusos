@@ -1,5 +1,6 @@
 from networkx.generators import line
 from sklearn.linear_model import LinearRegression
+from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 import numpy as np
 import time
@@ -67,10 +68,10 @@ class Robot():
     _currVelocity = 0.0
     _lastVelocity = 0.0
     
-    _functions = {
-        "VelocityBattery" : (Utils.LinearRegression(), []),
-        "VelocityTime"    : (Utils.LinearRegression(), []),
-        "BatteryTime"     : (Utils.LinearRegression(), [])
+    _functions: dict[str, tuple[any, list]] = {
+        "VelocityBattery" :    (Utils.LinearRegression(), []),
+        "VelocityTime"    :    (Utils.LinearRegression(), []),
+        "BatteryTime"     : (Utils.NonLinearRegression(), [])
     }
     
     ERROR_NOT_AVAILABLE_PREDICTION = "Não é possivel efetuar a previsão"
@@ -251,6 +252,7 @@ class Robot():
     def predictTimeFromBattery(battery: int) -> float:
         """
         Estima através do valor dado de bateria quanto tempo desde os 100% demoraria para o atingir.
+        Usa uma Regressão não linear de y = -(x**2) / c + 100
 
         Args:
             battery (int): Nivel de bateria requesitado
@@ -258,26 +260,25 @@ class Robot():
         Returns:
             float: Tempo até ao nivel da bateria ser alcançado.
         """
-        if not len(Robot._functions["BatteryTime"][1]):
+        if not len(Robot._functions["BatteryTime"][1]) or not battery:
             raise Robot.NotAvailablePrediction(Robot.ERROR_NOT_AVAILABLE_PREDICTION)
         
+        # Inicializar non Linear Regression
+        Robot._functions["BatteryTime"][1].sort()
+        x: Utils.NonLinearRegression = Robot._functions["BatteryTime"][0]
         
-        
-        # Inicializar LinearRegression
-        lineReg = Robot._functions["BatteryTime"][0].generate(
-            Robot._functions["BatteryTime"][1]
+        try:
+            coef = x.coef, # valor do coeficiente
+        except AttributeError:
+            coef = 250
+            
+        x.generate(
+            Robot._functions["BatteryTime"][1],
+            coef,    # valor do coeficiente
+            100      # valor de B (começa sempre em 100)
         )
         
-        x = np.arange(0, lineReg.predictX(0), 1)
-        y = lineReg.m * x + lineReg.b
-        
-        plt.scatter(lineReg.x, lineReg.y)
-        plt.plot(x, y)
-        
-        timeLast = lineReg.predictX(battery/2) - (Robot._currTime - Robot._last100Time)
-        print(f"result = {timeLast}")
-        
-        plt.show()
+        timeLast = x.predictX(battery, x.coef) - Robot._timeSince100
         
         return timeLast
     
@@ -296,15 +297,11 @@ class Robot():
         if not len(Robot._functions["VelocityBattery"][1]) or not Robot._currBattery:
             raise Robot.NotAvailablePrediction(Robot.ERROR_NOT_AVAILABLE_PREDICTION)
 
-        value = np.array(battery).reshape(-1, 1)
-           
-        # Inicializar LinearRegression        
-        f = (np.array([i for i, _ in Robot._functions["VelocityBattery"][1]]).reshape(-1, 1),
-             np.array([j for _, j in Robot._functions["VelocityBattery"][1]]).reshape(-1, 1))
+        # Inicializar LinearRegression
+        regression = Robot._functions["VelocityTime"][0].\
+            generate(Robot._functions["VelocityBattery"][1])
         
-        regression = Robot._functions["VelocityTime"][0].fit(f[0], f[1])
-        
-        return regression.predict(value)[0][0]
+        return regression.predictY(battery)
     
     
     @staticmethod
@@ -321,15 +318,11 @@ class Robot():
         if not len(Robot._functions["VelocityTime"][1]) or not Robot._currBattery:
             raise Robot.NotAvailablePrediction(Robot.ERROR_NOT_AVAILABLE_PREDICTION)
 
-        value = np.array(eTime).reshape(-1, 1)
-           
-        # Inicializar LinearRegression        
-        f = (np.array([i for i, _ in Robot._functions["VelocityTime"][1]]).reshape(-1, 1),
-             np.array([j for _, j in Robot._functions["VelocityTime"][1]]).reshape(-1, 1))
+        # Inicializar LinearRegression
+        regression = Robot._functions["VelocityTime"][0].\
+            generate(Robot._functions["VelocityBattery"][1])
         
-        regression = Robot._functions["VelocityTime"][0].fit(f[0], f[1])
-        
-        return regression.predict(value)[0][0]
+        return regression.predictY(eTime)
     
     
     @staticmethod
