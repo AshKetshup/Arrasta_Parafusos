@@ -1,3 +1,4 @@
+from typing import Iterator
 import networkx as nx
 from networkx.classes.graph import Graph
 from objectManager import Objects
@@ -188,7 +189,9 @@ class Enviroment():
         for i, zone in enumerate(Enviroment._zones):
             # Verificamos se estamos atualmente nela.
             if zone.isIn(coordinates):
+                # Atualizamos o mapa de informação
                 Enviroment.updateInfoMap(i)
+                # Saimos do for loop
                 break
         
         # Se existirem objetos
@@ -226,6 +229,23 @@ class Enviroment():
     @staticmethod
     def getTypeOfZone(zone: int) -> str:
         return Enviroment._zones[zone].getType()
+    
+    
+    # @staticmethod
+    # def search(condition: function, node = _currentZone, maxdepth = 10, depth = 0):
+    #     # TODO: FINISH THIS SHIT
+    #     nodes = []
+    #     for neighbor in Enviroment._infoMap.neighbors(node):
+    #         if Enviroment._infoMap.nodes[neighbor].get('station', False):
+    #             return neighbor
+    #         nodes.append(neighbor)
+    
+    #     for i in nodes:
+    #         if depth+1 > maxdepth:
+    #             return False
+    #         if Enviroment.search(condition, i, maxdepth, depth+1):
+    #             return i
+    #     return False
     
     
     @staticmethod

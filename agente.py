@@ -65,20 +65,75 @@ def resp3():
 
 def resp4():
     """Qual a distância até ao talho?"""
+    try:
+        # Adicionamos o robo ao grafo
+        Enviroment.addRobotToGraph()
+        
+        bixo = None
+        for node in list(Enviroment._infoMap.nodes(data = True)):
+            try:
+                if "talho" == Enviroment.getTypeOfZone(node[0]):
+                    bixo = node
+            except Zone.ZoneNotDefinedException as e:
+                continue
+        
+        if not bixo:
+            raise nx.NodeNotFound()
+        
+        print(
+            nx.astar_path(
+                Enviroment._zoneMap, 
+                Enviroment._map["ROBOT"], 
+                Enviroment.zoneToString(bixo[0])
+            )
+        )
+        
+        weight = nx.astar_path_length(
+            Enviroment._zoneMap,
+            Enviroment._map["ROBOT"], 
+            Enviroment.zoneToString(bixo[0])
+        )
+        
+        if Enviroment.getCurrentZone() == node[0]:
+            weight = 0
+        
+        # Eliminamos o robo do grafo
+        Enviroment.delRobotFromGraph()
+        print(f"Resposta: Distancia até ao talho = {weight}\n")
+    except nx.NodeNotFound as e:
+        print("Ainda não foi encontrado o objetivo")
     pass
 
 
 def resp5():
     """Quanto tempo achas que demoras a ir de onde estás até à caixa?"""
     try:
+        # Adicionamos o robo ao grafo
         Enviroment.addRobotToGraph()
-        weight = nx.astar_path_length(Enviroment._zoneMap, Enviroment._map["ROBOT"], Enviroment.zoneToString(0))
+        
+        bixo = None
+        nodeInfo = list(Enviroment._infoMap.nodes(data = True))
+        for node in nodeInfo:
+            if Objects.OBJ["CASHIER"] in node[1]:
+                bixo = node
+        
+        if not bixo:
+            raise nx.NodeNotFound()
+        
+        
+        weight = nx.astar_path_length(
+            Enviroment._zoneMap,
+            Enviroment._map["ROBOT"], 
+            Enviroment.zoneToString(bixo[0])
+        )
+        
+        # Eliminamos o robo do grafo
         Enviroment.delRobotFromGraph
-        return Robot.predictTimeFromDistance(weight)
-        print("Resposta: {0}\n".format(Utils.timeToStr(Robot.predictTimeFromDistance(weight))))
+        print(f"Resposta: {Utils.timeToStr(Robot.predictTimeFromDistance(weight))}\n")
     except Robot.NotAvailablePrediction as e:
         print(e.what())
-
+    except nx.NodeNotFound as e:
+        print("Ainda não foi encontrado o objetivo")
 
 def resp6():
     """
