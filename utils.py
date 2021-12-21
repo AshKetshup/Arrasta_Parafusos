@@ -116,9 +116,9 @@ class Utils():
             try:
                 if p[0] == 'X':     # Robot, é sempre o primeiro elemento
                     continue
-                elif p[0] == 'R':   # zona, dada pelo midpoint
+                elif p[0] == 'Z':   # zona, dada pelo midpoint
                     desc += "\nEstá na zona {0:2d}.".format(int(p[1:]))
-                elif p[0] == 'D':   # Porta -> indica um caminho a fazer entre duas salas
+                elif p[0] == 'E':   # Porta -> indica um caminho a fazer entre duas salas
                     desc += "\nVá da zona {0:2d} para a zona {1:2d}.".format(int(p[1:3]), int(p[3:]))
                 else:
                     raise Exception("I dunno!")     # Outros formatos desconhecidos, interrompe a execução

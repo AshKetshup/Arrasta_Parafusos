@@ -67,7 +67,7 @@ def resp2():
 
 def resp3():
     """Qual o caminho para a papelaria?"""
-    #Atençao ---- MOfificar a funçao 
+    #Atençao ---- MOfificar a funçao pathDescription
     '''Determina se a papelaria ja foi encontrada até ao momento '''
     try:
         # Adicionamos o robo ao grafo
