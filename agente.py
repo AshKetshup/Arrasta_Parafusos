@@ -18,6 +18,7 @@ from robot import Robot
 from utils import Utils
 from zone import Zone
 import networkx as nx
+import matplotlib.pyplot as plt
 
 
 def work(posicao, bateria, objetos) -> None:
@@ -43,6 +44,16 @@ def resp1():
     """Qual foi a penúltima pessoa do sexo feminino que viste?"""
     try:
         print(Objects.getPenultSawFemale())
+        nx.draw_random(Enviroment._zoneMap, with_labels=True)
+        plt.savefig("map2.png")
+        plt.clf()
+        nx.draw_random(Enviroment._infoMap, with_labels=True)
+        plt.savefig("map4.png")
+        plt.clf()
+        nx.draw_circular(Enviroment._zoneMap, with_labels=True)
+        plt.savefig("map3.png")
+        plt.clf()
+
     except Objects.NotEnoughFemalesException as e:
         print(e.what())
 
@@ -56,9 +67,40 @@ def resp2():
 
 def resp3():
     """Qual o caminho para a papelaria?"""
-    
+    #Atençao ---- MOfificar a funçao 
     '''Determina se a papelaria ja foi encontrada até ao momento '''
+    try:
+        # Adicionamos o robo ao grafo
+        Enviroment.addRobotToGraph()
+        
+        bixo = None
+        for node in list(Enviroment._infoMap.nodes(data = True)):
+            try:
+                if "papelaria" == Enviroment.getTypeOfZone(node[0]):
+                    bixo = node
+            except Zone.ZoneNotDefinedException as e:
+                continue
+        
+        if not bixo:
+            raise nx.NodeNotFound()
+        
+        
+        path = nx.astar_path(
+            Enviroment._zoneMap,
+            Enviroment._map["ROBOT"], 
+            Enviroment.zoneToString(bixo[0])
+        )
+        
+        if Enviroment.getCurrentZone() == node[0]:
+            path = Enviroment.zoneToString(bixo[0])
+            print("Já se encontra na papelaria")
 
+        # Eliminamos o robo do grafo
+        Enviroment.delRobotFromGraph()
+        print(f"Resposta: O caminho até a papelaria é : {Utils.pathDescription(path)}\n")
+    except nx.NodeNotFound as e:
+        print("Ainda não foi encontrado o objetivo")
+    pass
 
     pass
 
