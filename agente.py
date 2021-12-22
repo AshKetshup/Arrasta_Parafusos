@@ -9,15 +9,15 @@ colocar aqui os nomes e número de aluno:
 43464, Cristiano Santos
 
 """
+import networkx as nx
 from math import floor
 
-from networkx import utils
+from constant import *
 from objectManager import Objects
 from enviroment import Enviroment
 from robot import Robot
 from utils import Utils
 from zone import Zone
-import networkx as nx
 
 
 def work(posicao, bateria, objetos) -> None:
@@ -46,13 +46,14 @@ def resp1():
     except Objects.NotEnoughFemalesException as e:
         print(e.what())
 
+
 def resp2():
     """Em que tipo de zona estás agora?"""
     try:
         print(Enviroment.getCurrentZone().getType())
     except Zone.ZoneNotDefinedException as e:
-        print(e.what())
-    
+        print("Corredor" if Enviroment.indexOfCurrentZone() in range(6) else e.what())
+
 
 def resp3():
     """Qual o caminho para a papelaria?"""
@@ -100,9 +101,8 @@ def resp4():
         # Eliminamos o robo do grafo
         Enviroment.delRobotFromGraph()
         print(f"Resposta: Distancia até ao talho = {weight}\n")
-    except nx.NodeNotFound as e:
+    except nx.NodeNotFound:
         print("Ainda não foi encontrado o objetivo")
-    pass
 
 
 def resp5():
@@ -114,7 +114,7 @@ def resp5():
         bixo = None
         nodeInfo = list(Enviroment._infoMap.nodes(data = True))
         for node in nodeInfo:
-            if Objects.OBJ["CASHIER"] in node[1]:
+            if OBJ["CASHIER"] in node[1]:
                 bixo = node
         
         if not bixo:
@@ -154,11 +154,18 @@ def resp6():
 
 def resp7():
     """Qual é a probabilidade da próxima pessoa a encontrares ser uma criança?"""
-    pass
+    try:
+        print(Enviroment.getProbabilityOfNextPersonBeAChild())
+    except ZeroDivisionError:
+        print("Ainda não foram encontrados elementos consideraveis suficientes para a estatistica.")
+
 
 def resp8():
     """
     Qual é a probabilidade de encontrar um adulto numa zona se estiver lá uma
     criança mas não estiver lá um carrinho?
     """
-    pass
+    try:
+        print(Enviroment.getProbabilityOfAdultInZoneIfThereIsChildButNoShopcar())
+    except ZeroDivisionError:
+        print("Ainda não foi encontrado nenhum elemento consideravel na estatistica.")

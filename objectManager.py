@@ -1,7 +1,8 @@
 import csv
 
+from enviroment import Enviroment
 from utils import SimpleException
-from zone import Zone
+from constant import *
 
 
 class Objects():
@@ -39,34 +40,12 @@ class Objects():
         * [X] getListOfPeople()
         * [X] getListOfObjects()
     """
+    from zone import Zone
+    
     _people         = list()
     _objects        = list()
     _lastTwoFemales = (None, None)
     
-    # SIZE: Tamanho de cada tipo de objecto que compõe o mundo
-    SIZE = {
-        "OBJECT": 25,
-        "WALL"  : 15
-    }
-
-    # OBJETOS: Identifica segundo os nomes dados pelo robô
-    OBJ = {
-        "ADULT"    : "adulto",
-        "CHILD"    : "criança",
-        "EMPLOYEE" : "funcionário",
-        "CART"     : "carrinho",
-        "ZONE"     : "zona",
-        "CASHIER"  : "caixa"
-    }
-
-    # CATEGORIAS: Agrupa os varios objetos para identificação nos algoritmos correspondentes
-    CATEGORY = {
-        "OBJECT": [OBJ["CART"], OBJ["CASHIER"]],                   # Objetos
-        "PEOPLE": [OBJ["EMPLOYEE"], OBJ["ADULT"], OBJ["CHILD"]],   # Pessoas
-        "LOCALS": [OBJ["ZONE"]]                                    # Locais
-    }
-    
-    SPLITTER = "_"
 
     ERROR_NOT_ENOUGH_FEMALES = "Não foram avistadas pelo menos 2 pessoas do sexo feminino até ao momento"
     class NotEnoughFemalesException(SimpleException):
@@ -92,20 +71,23 @@ class Objects():
         # Se o objeto não foi ainda encontrado:
         if not Objects.isIn(obj): 
             # Se a categoria for de pessoa:
-            if obj in Objects.CATEGORY["PEOPLE"]:
+            if obj in CATEGORY["PEOPLE"]:
                 # Vamos adicionar ao à lista de pessoas.
-                Objects._people.append(obj)
+                Objects._people.append(obj, Enviroment.indexOf)
             # Se a categoria for de objetos:
             else:
                 # Vamos adicionar ao à lista de objetos.
                 Objects._objects.append(obj)
                 # Se a categoria for uma zona:
-                if obj[0] in Objects.CATEGORY["LOCALS"]:
+                if obj[0] in CATEGORY["LOCALS"] or obj[0] in OBJ["CASHIER"]:
                     # Vamos dar set na zona atual
-                    currentZone.setType(obj[1])
+                    try:
+                        currentZone.getType()
+                    except Exception:
+                        currentZone.setType(obj)
         
         # Se o objeto for uma pessoa do sexo feminino: 
-        if obj[0] in Objects.CATEGORY["PEOPLE"] and Objects.sexCheck(obj[1]) == "female":
+        if obj[0] in CATEGORY["PEOPLE"] and Objects.sexCheck(obj[1]) == "female":
             # Se não for a ultima pessoa do sexo feminino a ser encontrada:
             if not Objects.isLastFemale(obj):
                 # Vamos dar swap aos elementos retirando o mais antigo

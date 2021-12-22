@@ -1,13 +1,11 @@
 from typing import Iterator
 import networkx as nx
 from networkx.classes.graph import Graph
-from objectManager import Objects
 
+from constant import *
 from robot import Robot
 from zone import Zone
 from utils import Utils
-
-
 
 class Enviroment():
     _map = {
@@ -23,8 +21,8 @@ class Enviroment():
         Zone((285, 435), (165, 435)),
         Zone((435, 770), (165, 285)),
         Zone((435, 770), (285, 330)),
-        Zone((180, 285), ( 30, 135)),
         Zone(( 30, 135), ( 30, 135)),
+        Zone((180, 285), ( 30, 135)),
         Zone((330, 435), ( 30, 135)),
         Zone((480, 585), ( 30, 135)),
         Zone((630, 770), ( 30, 135)),
@@ -194,12 +192,14 @@ class Enviroment():
                 # Saimos do for loop
                 break
         
+        curr = Enviroment._zones[Enviroment._currentZone]
+        
         # Se existirem objetos
         if objects:
             # Para cada objeto
             for obj in objects:
                 # Vamos criar o objeto (Separando num tuplo pelo tipo e nome)
-                obj = tuple(obj.split(Objects.SPLITTER, 1))
+                obj = tuple(obj.split(SPLITTER, 1))
                 
                 # Se o objeto não estiver já guardado.
                 if not Objects.isIn(obj):
@@ -223,8 +223,14 @@ class Enviroment():
                         Enviroment._infoMap.nodes[Enviroment._currentZone][obj[0]] = [(coordinates, obj[1])]
                 
                 # Adcionamos o objeto caso seja novo
-                Objects.add(obj, Enviroment._zones[Enviroment._currentZone])
+                Objects.add(obj, curr)
                 
+        try:
+            Enviroment.getCurrentZone().getType()
+        except Exception:
+            if Enviroment._lastVisited == -1:
+                curr.setStart()
+
                 
     @staticmethod
     def getTypeOfZone(zone: int) -> str:
@@ -285,12 +291,13 @@ class Enviroment():
         zones_with_adult_and_child_but_no_shopcar = 0
         zones_with_child_but_no_shopcar           = 0
 
-        '''Efetuar ciclo para verificar zona no grafo e incrementar as variaveis acima
-        for(zones, ) in Enviroment._infoMap.nodes(data=True):
-            if zones not in range(0,5):
-                total_zones+=1
-            if Objects   
-        '''
+        '''Efetuar ciclo para verificar zona no grafo e incrementar as variaveis acima'''
+        for node in list(Enviroment._infoMap.nodes(data = True)):
+            if OBJ["ADULT"] in node[1] and OBJ["CHILD"] in node[1] and not OBJ["CART"] in node[1]:
+                zones_with_adult_and_child_but_no_shopcar += 1
+            if OBJ["CHILD"] in node[1] and OBJ["CART"] not in node[1]:
+                zones_with_child_but_no_shopcar += 1
+            total_zones += 1        
         
         #Probabilidade de existir zona com adulto,criança mas nao carrinho
         prob_zones_with_adult_and_child_but_no_shopcar = zones_with_adult_and_child_but_no_shopcar / total_zones
@@ -306,11 +313,7 @@ class Enviroment():
     def getProbabilityOfNextPersonBeAChild():
         '''Determina a probabilidade de a proxima pessoa ser uma criança'''
 
-        #Contabiliza os "objectos" encontrados (crianças, adultos e carrinhos)
-        total_objects = 0
-
         # Contabiliza os "objetos" agrupando-os de forma individual
-
         # Let:
         #   A = Adult
         #   B = Shopcar
@@ -319,8 +322,9 @@ class Enviroment():
         #   and, used to simulate the following P(B,C)
         # Example: LCnX = Adult and Shopcar and NOT Child
 
-        object_A = 0
-        object_B = 0
+        countA = 0
+        countB = 0
+        countC = 0
 
         
         #A probabilidade que estamos a calcular pode-se tradizir da seguinte forma.
@@ -329,16 +333,22 @@ class Enviroment():
         #Assim sendo, o robo só precisa de recolher as probabilidades de A e B
         #A nossa linha de raciocinio esta devidamente clarificada no pdf do relatorio
 
-        '''Efetuar ciclo para verificar zona no grafo e incrementar as variaveis acima 
+        '''Efetuar ciclo para verificar zona no grafo e incrementar as variaveis acima '''
         
-        
-        
-        
-        '''
+        for node in list(Enviroment._infoMap.nodes(data = True)):
+            if OBJ["ADULT"] in node[1]:
+                countA += len(node[1][OBJ["ADULT"]])
+            if OBJ["CART"] in node[1]:
+                countB += len(node[1][OBJ["CART"]])
+            if OBJ["CHILD"] in node[1]:
+                countC += len(node[1][OBJ["CHILD"]])
+                
+        #Contabiliza os "objectos" encontrados (crianças, adultos e carrinhos)
+        total_objects = countA + countB + countC
         
         #Calculo das probabilidades
-        prob_adult = object_A / total_objects
-        prob_shopcar = object_B / total_objects
+        prob_adult = countA / total_objects
+        prob_shopcar = countB / total_objects
 
         #0.8 e o 0.1 são valores provenienetes da tabela dada no enunciadoe são respetivamente
         #prob_C_knowing_AB = 0.8 e prob_C_knowing_nAB = 0.1  
