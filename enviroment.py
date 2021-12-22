@@ -191,8 +191,18 @@ class Enviroment():
                 Enviroment.updateInfoMap(i)
                 # Saimos do for loop
                 break
+
+        adapted_pos = Robot.getAdaptedPosition()
+        adapted_zone = Enviroment._currentZone
+        for i, zone in enumerate(Enviroment._zones):
+            # Verificamos se estamos atualmente nela.
+            if zone.isIn(adapted_pos):
+                # Atualizamos o mapa de informação
+                adapted_zone = i
+                # Saimos do for loop
+                break
         
-        curr = Enviroment._zones[Enviroment._currentZone]
+        curr = Enviroment._zones[adapted_zone]
         
         # Se existirem objetos
         if objects:
@@ -206,7 +216,7 @@ class Enviroment():
                     # Tentamos:
                     try:
                         # Obtemos os objetos atuais
-                        currentObjects = [n[1] for n in Enviroment._infoMap.nodes[Enviroment._currentZone][obj[0]]]
+                        currentObjects = [n[1] for n in Enviroment._infoMap.nodes[adapted_zone][obj[0]]]
                         
                         # Se o nome do objeto não estiver nos objetos atuais:
                         if obj[1] not in currentObjects:
@@ -214,13 +224,13 @@ class Enviroment():
                             #     no node da zona atual (dicionario), No indice do tipo de objeto
                             #     damos append nesse indice a posição adaptada do objeto e respetivo nome.
                             Enviroment._infoMap\
-                                .nodes[Enviroment._currentZone][obj[0]]\
-                                .append((Robot.getAdaptedPosition(), obj[1]))
+                                .nodes[adapted_zone][obj[0]]\
+                                .append((adapted_pos, obj[1]))
                     
                     # Ao levantar KeyError (Não foi encontrado a chave `obj[0]` no dicionario)
                     except KeyError:
                         # Atribuimos ao node da zona atual, no obj[0] atribuimos as coordenadas e o nome do objeto.
-                        Enviroment._infoMap.nodes[Enviroment._currentZone][obj[0]] = [(coordinates, obj[1])]
+                        Enviroment._infoMap.nodes[adapted_zone][obj[0]] = [(adapted_pos, obj[1])]
                 
                 # Adcionamos o objeto caso seja novo
                 Objects.add(obj, curr)
