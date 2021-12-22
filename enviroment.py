@@ -15,22 +15,22 @@ class Enviroment():
     }
     
     _zones = [
-        Zone(( 30, 135), (165, 435)),
-        Zone((135, 285), (165, 285)),
-        Zone((135, 285), (285, 330)),
-        Zone((285, 435), (165, 435)),
-        Zone((435, 770), (165, 285)),
-        Zone((435, 770), (285, 330)),
-        Zone(( 30, 135), ( 30, 135)),
-        Zone((180, 285), ( 30, 135)),
-        Zone((330, 435), ( 30, 135)),
-        Zone((480, 585), ( 30, 135)),
-        Zone((630, 770), ( 30, 135)),
-        Zone((630, 770), (435, 570)),
-        Zone((480, 585), (435, 570)),
-        Zone((330, 435), (435, 570)),
-        Zone((180, 285), (435, 570)),
-        Zone(( 30, 135), (435, 570))
+        Zone(( 30, 135), (165, 435)), # 1 
+        Zone((135, 285), (165, 285)), # 2 
+        Zone((135, 285), (330, 435)), # 3 
+        Zone((285, 435), (165, 435)), # 4 
+        Zone((435, 770), (165, 285)), # 5 
+        Zone((435, 770), (330, 435)), # 6 
+        Zone(( 30, 135), ( 30, 135)), # 7 
+        Zone((180, 285), ( 30, 135)), # 8 
+        Zone((330, 435), ( 30, 135)), # 9 
+        Zone((480, 585), ( 30, 135)), # 10
+        Zone((630, 770), ( 30, 135)), # 11
+        Zone((630, 770), (435, 570)), # 12
+        Zone((480, 585), (435, 570)), # 13
+        Zone((330, 435), (435, 570)), # 14
+        Zone((180, 285), (435, 570)), # 15
+        Zone(( 30, 135), (435, 570))  # 16
     ]
     
     _lastVisited = -1    # Indice da última zona visitada
@@ -91,12 +91,12 @@ class Enviroment():
     
     @staticmethod
     def zoneToString(index: int) -> str:
-        return f"Z{index:02d}"
+        return f"Z{index+1:02d}"
     
     
     @staticmethod
     def entryToString(zFrom: int, zTo: int) -> str:
-        return f"E{min(zFrom, zTo):02d}{max(zFrom, zTo):02d}"
+        return f"E{min(zFrom+1, zTo+1):02d}{max(zFrom+1, zTo+1):02d}"
     
     
     @staticmethod
@@ -236,24 +236,7 @@ class Enviroment():
     def getTypeOfZone(zone: int) -> str:
         return Enviroment._zones[zone].getType()
     
-    
-    # @staticmethod
-    # def search(condition: function, node = _currentZone, maxdepth = 10, depth = 0):
-    #     # TODO: FINISH THIS SHIT
-    #     nodes = []
-    #     for neighbor in Enviroment._infoMap.neighbors(node):
-    #         if Enviroment._infoMap.nodes[neighbor].get('station', False):
-    #             return neighbor
-    #         nodes.append(neighbor)
-    
-    #     for i in nodes:
-    #         if depth+1 > maxdepth:
-    #             return False
-    #         if Enviroment.search(condition, i, maxdepth, depth+1):
-    #             return i
-    #     return False
-    
-    
+
     @staticmethod
     def addRobotToGraph() -> None:
         # Criamos o nó correspondente ao Robot        
@@ -269,7 +252,8 @@ class Enviroment():
             )
             # E adicionamos a aresta ao Robot com a distancia correspondente como peso.
             Enviroment._zoneMap.add_edge(Enviroment._map["ROBOT"], edge, weight = distance)
-            
+
+
     @staticmethod
     def delRobotFromGraph() -> None:
         try:
