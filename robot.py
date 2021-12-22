@@ -142,8 +142,8 @@ class Robot():
         """
         position = Robot.getPosition()
         direction = Robot.getDirection()
-        # if Robot.DIR["STATIC"] in direction:
-        return position
+        if Robot.DIR["STATIC"] in direction:
+            return position
         
         adapted = (
             position[0] + SIZE["OBJECT"] if Robot.DIR["RIGHT"] in direction else -SIZE["OBJECT"],
@@ -180,7 +180,7 @@ class Robot():
 
         Args:
             position (tuple[int, int]): posição dada
-        """        
+        """
         Robot._currPosition, Robot._lastPosition = position, Robot._currPosition
         
     
@@ -191,7 +191,7 @@ class Robot():
 
         Args:
             battery (int): Bateria atual
-        """        
+        """
         Robot._currBattery, Robot._lastBattery = battery, Robot._currBattery
 
 
@@ -298,7 +298,7 @@ class Robot():
             raise Robot.NotAvailablePrediction(Robot.ERROR_NOT_AVAILABLE_PREDICTION)
 
         # Inicializar LinearRegression
-        regression = Robot._functions["VelocityTime"][0].\
+        regression = Robot._functions["VelocityBattery"][0].\
             generate(Robot._functions["VelocityBattery"][1])
         
         return regression.predictY(battery)
@@ -341,5 +341,5 @@ class Robot():
         vf = Robot.predictVelocityFromTime(time.time() - Robot._last100Time)
         vi = Robot.predictVelocityFromTime(0)
         
-        elapsedTime = 2 * distance / (vf + vi)
+        elapsedTime = (2 * distance) / (vf + vi)
         return elapsedTime

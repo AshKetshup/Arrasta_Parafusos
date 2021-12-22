@@ -130,8 +130,9 @@ def resp4():
             Enviroment.zoneToString(bixo[0])
         )
         
-        if Enviroment.getCurrentZone() == node[0]:
-            weight = 0
+        if Enviroment.indexOfCurrentZone() == node[0]:
+            print(node[1])
+            weight = Utils.calcDistance(Robot.getPosition(), node[1][OBJ["ZONE"]][0][0])
         
         # Eliminamos o robo do grafo
         Enviroment.delRobotFromGraph()
