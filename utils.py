@@ -103,3 +103,25 @@ class Utils():
     def timeToStr(t):
         """Formata um dado tempo em segundos e milissegundos."""
         return "{0:3d} segundos e {1:3d} milissegundos".format(int(t), int((t - int(t)) * 1000))    
+
+    
+    #EDITAR etsa funçao
+    @staticmethod
+    def pathDescription(path):
+        """Formata um caminho em frases legíveis para humanos.
+        Tem em consideração a formatação utilizada pelo zoneMap da classe Environment."""
+
+        desc = ""
+        for p in path:
+            try:
+                if p[0] == 'X':     # Robot, é sempre o primeiro elemento
+                    continue
+                elif p[0] == 'Z':   # zona, dada pelo midpoint
+                    desc += "\nEstá na zona {0:2d}.".format(int(p[1:]))
+                elif p[0] == 'E':   # Porta -> indica um caminho a fazer entre duas salas
+                    desc += "\nVá da zona {0:2d} para a zona {1:2d}.".format(int(p[1:3]), int(p[3:]))
+                else:
+                    raise Exception("I dunno!")     # Outros formatos desconhecidos, interrompe a execução
+            except:
+                desc += "\n[Error: \"{0}\" was not understood by the path descriptor]".format(p)
+        return desc if len(desc) > 0 else "Nenhum caminho foi encontrado."    
