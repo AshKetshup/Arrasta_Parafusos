@@ -92,19 +92,19 @@ def resp3():
             Enviroment._map["ROBOT"], 
             Enviroment.zoneToString(bixo[0])
         )
-        
-        if Enviroment.getCurrentZone() == node[0]:
-            path = Enviroment.zoneToString(bixo[0])
-            print("Já se encontra na papelaria")
 
         # Eliminamos o robo do grafo
         Enviroment.delRobotFromGraph()
-        print(f"Resposta: O caminho até a papelaria é : {Utils.pathDescription(path)}\n")
+        
+        caminho = Utils.pathDescription(path, Enviroment.zoneToString(Enviroment.indexOfCurrentZone()))
+        if Enviroment.indexOfCurrentZone() == bixo[0]:
+            path = Enviroment.zoneToString(bixo[0])
+            caminho = "\nJá se encontra na papelaria"
+            
+        print(f"Resposta: O caminho até a papelaria é : {caminho}\n")
     except nx.NodeNotFound as e:
         print("Ainda não foi encontrado o objetivo")
-    pass
 
-    pass
 
 
 def resp4():
