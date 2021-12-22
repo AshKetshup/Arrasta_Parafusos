@@ -72,7 +72,7 @@ class Objects():
         if not Objects.isIn(obj): 
             # Se a categoria for de pessoa:
             if obj in CATEGORY["PEOPLE"]:
-                # Vamos adicionar ao à lista de pessoas.
+                # Vamos adicionar ao à lista de pessoas. TODO
                 Objects._people.append(obj, Enviroment.indexOf)
             # Se a categoria for de objetos:
             else:

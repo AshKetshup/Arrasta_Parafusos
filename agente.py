@@ -143,25 +143,35 @@ def resp4():
 def resp5():
     """Quanto tempo achas que demoras a ir de onde estás até à caixa?"""
     # TODO FIND FUCKING BUG
+    # TODO CHANGE BIXO
     try:
         # Adicionamos o robo ao grafo
         Enviroment.addRobotToGraph()
         
-        bixo = None
+        foundNode = None
         nodeInfo = list(Enviroment._infoMap.nodes(data = True))
         for node in nodeInfo:
             if OBJ["CASHIER"] in node[1]:
-                bixo = node
+                foundNode = node
+                break
         
-        if not bixo:
+        if not foundNode:
             raise nx.NodeNotFound()
         
+        print(f"currPoint: {Robot.getPosition()}")
+        if Enviroment._currentZone != foundNode[0]:
+            weight = nx.astar_path_length(
+                Enviroment._zoneMap,
+                Enviroment._map["ROBOT"], 
+                Enviroment.zoneToString(foundNode[0])
+            )
+        else:
+            # for point in foundNode[1][OBJ["CASHIER"]]:
+            #     print(f"point: {point[0]}, point: {type(point[0])}")
+            #     Utils.calcDistance(Robot.getPosition(), point[0])
+            weight = min([Utils.calcDistance(Robot.getPosition(), point[0]) for point in foundNode[1][OBJ["CASHIER"]]])
         
-        weight = nx.astar_path_length(
-            Enviroment._zoneMap,
-            Enviroment._map["ROBOT"], 
-            Enviroment.zoneToString(bixo[0])
-        )
+        print(weight)
         
         # Eliminamos o robo do grafo
         Enviroment.delRobotFromGraph

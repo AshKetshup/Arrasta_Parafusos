@@ -139,17 +139,17 @@ class Robot():
 
         Returns:
             tuple[int, int]: Coordenadas do objeto encontrado
-        """        
+        """
         position = Robot.getPosition()
         direction = Robot.getDirection()
-        if Robot.DIR["STATIC"] in direction:
-            return position
+        # if Robot.DIR["STATIC"] in direction:
+        return position
         
-        return (
+        adapted = (
             position[0] + SIZE["OBJECT"] if Robot.DIR["RIGHT"] in direction else -SIZE["OBJECT"],
             position[1] + SIZE["OBJECT"] if Robot.DIR["DOWN"]  in direction else -SIZE["OBJECT"]
         )
-
+        return adapted
 
     @staticmethod
     def getCurrentBattery() -> int:
@@ -320,7 +320,9 @@ class Robot():
 
         # Inicializar LinearRegression
         regression = Robot._functions["VelocityTime"][0].\
-            generate(Robot._functions["VelocityBattery"][1])
+            generate(Robot._functions["VelocityTime"][1])
+        
+        regression.plot()
         
         return regression.predictY(eTime)
     

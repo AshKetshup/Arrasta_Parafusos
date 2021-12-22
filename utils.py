@@ -81,6 +81,13 @@ class Utils():
             self.b = (self.sumY - self.m * self.sumX) / self.n
             
             return self
+        
+        def plot(self):
+            import matplotlib.pyplot as plt
+            plt.style.use('seaborn-whitegrid')
+            plt.plot(self.x, self.y, 'o')
+            plt.plot(self.x, list(map(lambda x: self.predictY(x), self.x)))
+            plt.show()
             
         def predictX(self, y: float) -> float:
             return ((y - self.b) / self.m)
@@ -93,7 +100,7 @@ class Utils():
             
     @staticmethod
     def calcDistance(a: tuple[int, int], b: tuple[int, int]) -> int:
-        return ((a[1] - a[0]) ** 2 + (b[1] - b[0]) ** 2) ** 0.5
+        return ((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5
     
     @staticmethod
     def calcMidPoint(xRange: tuple[int, int], yRange: tuple[int, int]) -> tuple[int, int]:
