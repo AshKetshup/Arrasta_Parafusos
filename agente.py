@@ -69,7 +69,6 @@ def resp2():
 
 def resp3():
     """Qual o caminho para a papelaria?"""
-    #Atençao ---- MOfificar a funçao pathDescription
     '''Determina se a papelaria ja foi encontrada até ao momento '''
     try:
         # Adicionamos o robo ao grafo
@@ -109,6 +108,7 @@ def resp3():
 
 def resp4():
     """Qual a distância até ao talho?"""
+    # TODO FIND FUCKING BUG
     try:
         # Adicionamos o robo ao grafo
         Enviroment.addRobotToGraph()
@@ -123,14 +123,6 @@ def resp4():
         
         if not bixo:
             raise nx.NodeNotFound()
-        
-        print(
-            nx.astar_path(
-                Enviroment._zoneMap, 
-                Enviroment._map["ROBOT"], 
-                Enviroment.zoneToString(bixo[0])
-            )
-        )
         
         weight = nx.astar_path_length(
             Enviroment._zoneMap,
@@ -150,6 +142,7 @@ def resp4():
 
 def resp5():
     """Quanto tempo achas que demoras a ir de onde estás até à caixa?"""
+    # TODO FIND FUCKING BUG
     try:
         # Adicionamos o robo ao grafo
         Enviroment.addRobotToGraph()
@@ -178,6 +171,7 @@ def resp5():
     except nx.NodeNotFound as e:
         print("Ainda não foi encontrado o objetivo")
 
+
 def resp6():
     """
     Quanto tempo achas que falta até ficares com metade da bateria que tens 
@@ -191,8 +185,6 @@ def resp6():
         print(f"O robot prevê a possibilidade de chegarmos ao nivel de bateria '{halfBattery}' daqui a {pTime:04f}s\n")
     except Robot.NotAvailablePrediction as e:
         print(e.what())
-
-    
     
 
 def resp7():
