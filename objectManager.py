@@ -157,7 +157,6 @@ class Objects():
         """
         # Se estiver algum None no tuplo:
         if None in Objects._lastTwoFemales:
-            print(Objects._lastTwoFemales)
             # Levantamos a exceção de que ainda não avistamos mais que 2 pessoas.
             raise Objects.NotEnoughFemalesException(Objects.ERROR_NOT_ENOUGH_FEMALES)
         # Caso não encontremos nenhum None:

@@ -68,13 +68,13 @@ class Utils():
         def getB(self) -> float:
             return self.b
         
-        def plot(self):
-            """Dá plot à regressão não linear"""
-            import matplotlib.pyplot as plt
-            plt.style.use('seaborn-whitegrid')
-            plt.plot(self.x, self.y, '.')
-            plt.plot(self.x, list(map(lambda x: self.predictY(x, self.coef), self.x)))
-            plt.show()
+        # def plot(self):
+        #     """Dá plot à regressão não linear"""
+        #     import matplotlib.pyplot as plt
+        #     plt.style.use('seaborn-whitegrid')
+        #     plt.plot(self.x, self.y, '.')
+        #     plt.plot(self.x, list(map(lambda x: self.predictY(x, self.coef), self.x)))
+        #     plt.show()
         
         def predictX(self, y: float, coef: float) -> float:
             """
@@ -132,13 +132,13 @@ class Utils():
             
             return self
         
-        def plot(self):
-            """Dá plot à regressão linear"""
-            import matplotlib.pyplot as plt
-            plt.style.use('seaborn-whitegrid')
-            plt.plot(self.x, self.y, 'o')
-            plt.plot(self.x, list(map(lambda x: self.predictY(x), self.x)))
-            plt.show()
+        # def plot(self):
+        #     """Dá plot à regressão linear"""
+        #     import matplotlib.pyplot as plt
+        #     plt.style.use('seaborn-whitegrid')
+        #     plt.plot(self.x, self.y, 'o')
+        #     plt.plot(self.x, list(map(lambda x: self.predictY(x), self.x)))
+        #     plt.show()
             
         def predictX(self, y: float) -> float:
             """

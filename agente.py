@@ -104,17 +104,6 @@ def resp4():
         foo = lambda x: "talho" == Enviroment.getTypeOfZone(x[0])
         foundNode = Enviroment.findNode(foo)
         
-        # bixo = None
-        # for node in list(Enviroment._infoMap.nodes(data = True)):
-        #     try:
-        #         if "talho" == Enviroment.getTypeOfZone(node[0]):
-        #             bixo = node
-        #     except Zone.ZoneNotDefinedException as e:
-        #         continue
-        
-        # if not bixo:
-        #     raise nx.NodeNotFound()
-        
         if Enviroment.indexOfCurrentZone() != foundNode[0]:
             weight = nx.astar_path_length(
                 Enviroment._zoneMap,
