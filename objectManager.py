@@ -3,6 +3,7 @@ import csv
 from enviroment import Enviroment
 from utils import SimpleException
 from constant import *
+from zone import Zone
 
 
 class Objects():
@@ -40,7 +41,6 @@ class Objects():
         * [X] getListOfPeople()
         * [X] getListOfObjects()
     """
-    from zone import Zone
     
     _people         = list()
     _objects        = list()
@@ -72,8 +72,8 @@ class Objects():
         if not Objects.isIn(obj): 
             # Se a categoria for de pessoa:
             if obj in CATEGORY["PEOPLE"]:
-                # Vamos adicionar ao à lista de pessoas. TODO
-                Objects._people.append(obj, Enviroment.indexOf)
+                # Vamos adicionar à lista de pessoas.
+                Objects._people.append(obj)
             # Se a categoria for de objetos:
             else:
                 # Vamos adicionar ao à lista de objetos.

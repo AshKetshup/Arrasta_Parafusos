@@ -126,7 +126,19 @@ class Zone():
         
     
     def getXRange(self) -> tuple[int, int]:
+        """
+        Obtem os limites no eixo do X.
+
+        Returns:
+            tuple[int, int]: Limite do X
+        """        
         return self._xRange
     
     def getYRange(self) -> tuple[int, int]:
+        """
+        Obtem os limites no eixo do Y.
+
+        Returns:
+            tuple[int, int]: Limite do Y
+        """        
         return self._yRange

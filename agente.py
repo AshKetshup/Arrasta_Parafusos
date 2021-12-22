@@ -19,7 +19,6 @@ from robot import Robot
 from utils import Utils
 from zone import Zone
 import networkx as nx
-import matplotlib.pyplot as plt
 
 
 def work(posicao, bateria, objetos) -> None:
@@ -45,16 +44,6 @@ def resp1():
     """Qual foi a penúltima pessoa do sexo feminino que viste?"""
     try:
         print(Objects.getPenultSawFemale())
-        nx.draw_random(Enviroment._zoneMap, with_labels=True)
-        plt.savefig("map2.png")
-        plt.clf()
-        nx.draw_random(Enviroment._infoMap, with_labels=True)
-        plt.savefig("map4.png")
-        plt.clf()
-        nx.draw_circular(Enviroment._zoneMap, with_labels=True)
-        plt.savefig("map3.png")
-        plt.clf()
-
     except Objects.NotEnoughFemalesException as e:
         print(e.what())
 
@@ -108,32 +97,34 @@ def resp3():
 
 def resp4():
     """Qual a distância até ao talho?"""
-    # TODO FIND FUCKING BUG
     try:
         # Adicionamos o robo ao grafo
         Enviroment.addRobotToGraph()
         
-        bixo = None
-        for node in list(Enviroment._infoMap.nodes(data = True)):
-            try:
-                if "talho" == Enviroment.getTypeOfZone(node[0]):
-                    bixo = node
-            except Zone.ZoneNotDefinedException as e:
-                continue
+        foo = lambda x: "talho" == Enviroment.getTypeOfZone(x[0])
+        foundNode = Enviroment.findNode(foo)
         
-        if not bixo:
-            raise nx.NodeNotFound()
+        # bixo = None
+        # for node in list(Enviroment._infoMap.nodes(data = True)):
+        #     try:
+        #         if "talho" == Enviroment.getTypeOfZone(node[0]):
+        #             bixo = node
+        #     except Zone.ZoneNotDefinedException as e:
+        #         continue
         
-        weight = nx.astar_path_length(
-            Enviroment._zoneMap,
-            Enviroment._map["ROBOT"], 
-            Enviroment.zoneToString(bixo[0])
-        )
+        # if not bixo:
+        #     raise nx.NodeNotFound()
         
-        if Enviroment.indexOfCurrentZone() == node[0]:
-            print(node[1])
-            weight = Utils.calcDistance(Robot.getPosition(), node[1][OBJ["ZONE"]][0][0])
-        
+        if Enviroment.indexOfCurrentZone() != foundNode[0]:
+            weight = nx.astar_path_length(
+                Enviroment._zoneMap,
+                Enviroment._map["ROBOT"], 
+                Enviroment.zoneToString(foundNode[0])
+            )
+        else:
+            print(foundNode[1])
+            weight = Utils.calcDistance(Robot.getPosition(), foundNode[1][OBJ["ZONE"]][0][0])
+            
         # Eliminamos o robo do grafo
         Enviroment.delRobotFromGraph()
         print(f"Resposta: Distancia até ao talho = {weight}\n")
@@ -143,23 +134,13 @@ def resp4():
 
 def resp5():
     """Quanto tempo achas que demoras a ir de onde estás até à caixa?"""
-    # TODO FIND FUCKING BUG
-    # TODO CHANGE BIXO
     try:
         # Adicionamos o robo ao grafo
         Enviroment.addRobotToGraph()
         
-        foundNode = None
-        nodeInfo = list(Enviroment._infoMap.nodes(data = True))
-        for node in nodeInfo:
-            if OBJ["CASHIER"] in node[1]:
-                foundNode = node
-                break
+        foo = lambda x: OBJ["CASHIER"] in x[1]
+        foundNode = Enviroment.findNode(foo)
         
-        if not foundNode:
-            raise nx.NodeNotFound()
-        
-        print(f"currPoint: {Robot.getPosition()}")
         if Enviroment._currentZone != foundNode[0]:
             weight = nx.astar_path_length(
                 Enviroment._zoneMap,
@@ -167,10 +148,9 @@ def resp5():
                 Enviroment.zoneToString(foundNode[0])
             )
         else:
-            # for point in foundNode[1][OBJ["CASHIER"]]:
-            #     print(f"point: {point[0]}, point: {type(point[0])}")
-            #     Utils.calcDistance(Robot.getPosition(), point[0])
-            weight = min([Utils.calcDistance(Robot.getPosition(), point[0]) for point in foundNode[1][OBJ["CASHIER"]]])
+            weight = min(
+                [Utils.calcDistance(Robot.getPosition(), point[0]) for point in foundNode[1][OBJ["CASHIER"]]]
+            )
         
         print(weight)
         
@@ -188,7 +168,6 @@ def resp6():
     Quanto tempo achas que falta até ficares com metade da bateria que tens 
     agora?
     """
-    # TODO FIND FUCKING BUG
     try:
         halfBattery = floor(Robot.getCurrentBattery()/2)
         pTime = Robot.predictTimeFromBattery(halfBattery)

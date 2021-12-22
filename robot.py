@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
-from constant import SIZE
+from constant import SIZE, DIR
 from utils import Utils, SimpleException
 
 class Robot():
@@ -15,44 +15,9 @@ class Robot():
     Raises:
         Robot.NotAvailablePrediction: Levantada quando é requisitado uma previsão 
         em que o mesmo não tem dados suficientes para a concretizar.
-
-    CheckList:
-    [X]: Inicializar as variaveis
-        * [X] DIR
-        * [X] last & curr Position
-        * [X] last & curr Battery
-        * [X] last & curr Time
-        * [X] last & curr Velocity
-        * [X] functions
-    [X]: Implement manager functions
-        * [X] Positions 
-            - [X] getPosition()
-            - [X] getAdaptedPosition()
-            - [X] getDirection()
-            - [X] setPosition()
-            - [X] isDifferentPosition()
-        * [X] Velocity
-            - [X] updateVelocity()
-        * [X] Battery
-            - [X] setBattery()
-        * [X] Functions
-            - [X] updateFunctions()
-            - [X] predictVelocityFromTime()
-            - [X] predictVelocityFromBattery()
-            - [X] predictTimeFromBattery()
-            - [X] predictTimeFromDistance()
-    [X]: Implement Robot manager functions
-        * [X] updateRobot()
     """
     
-    DIR = {
-        "STATIC"   : 0,
-        "RIGHT"    : 1,
-        "LEFT"     : 2,
-        "UP"       : 3,
-        "DOWN"     : 4,
-    }
-    
+    # Inicialização das variaveis de classe
     _lastPosition = (100, 100)
     _currPosition = (100, 100)
     
@@ -68,6 +33,7 @@ class Robot():
     _currVelocity = 0.0
     _lastVelocity = 0.0
     
+    # Inicialização das funções de regressão e não regressão linear
     _functions: dict[str, tuple[any, list]] = {
         "VelocityBattery" :    (Utils.LinearRegression(), []),
         "VelocityTime"    :    (Utils.LinearRegression(), []),
@@ -103,20 +69,20 @@ class Robot():
 
         Returns:
             list[int]: Conjunto de direções tomadas pelo robot.
-        """        
+        """
         (x1, y1), (x0, y0) = Robot._currPosition, Robot._lastPosition 
         
         robotDir = (x1 - x0, y1 - y0)
         
         if robotDir == (0, 0):
-            return [Robot.DIR["STATIC"]]
+            return [DIR["STATIC"]]
         
         direction = list()
         if robotDir[0] != 0:
-            direction.append(Robot.DIR["RIGHT" if robotDir[0] > 0 else "LEFT"])
+            direction.append(DIR["RIGHT" if robotDir[0] > 0 else "LEFT"])
         
         if robotDir[1] != 0:
-            direction.append(Robot.DIR["DOWN" if robotDir[1] > 0 else "UP"])
+            direction.append(DIR["DOWN" if robotDir[1] > 0 else "UP"])
         
         return direction
     
@@ -142,14 +108,16 @@ class Robot():
         """
         position = Robot.getPosition()
         direction = Robot.getDirection()
-        if Robot.DIR["STATIC"] in direction:
+        if DIR["STATIC"] in direction:
             return position
         
         adapted = (
-            position[0] + SIZE["OBJECT"] if Robot.DIR["RIGHT"] in direction else -SIZE["OBJECT"],
-            position[1] + SIZE["OBJECT"] if Robot.DIR["DOWN"]  in direction else -SIZE["OBJECT"]
+            position[0] + (SIZE["OBJECT"] if DIR["RIGHT"] in direction else -SIZE["OBJECT"]),
+            position[1] + (SIZE["OBJECT"] if DIR["DOWN"]  in direction else -SIZE["OBJECT"])
         )
+        
         return adapted
+
 
     @staticmethod
     def getCurrentBattery() -> int:
@@ -197,6 +165,12 @@ class Robot():
 
     @staticmethod
     def updateTimeElapsed(battery: int) -> None:
+        """
+        Atualiza o tempo que passou desde o ultimo momento em que a bateria correspondia a 100%.
+
+        Args:
+            battery (int): percentagem da bateria
+        """        
         if battery == 100:
             Robot._last100Time = time.time()
         Robot._timeSince100 = time.time() - Robot._last100Time
@@ -214,13 +188,10 @@ class Robot():
                 Robot._currVelocity
             )
 
-    # TODO
+
     @staticmethod
     def updateFunctions() -> None:
-        """
-        Atualiza as funções de Regressão linear
-        """
-        # Atualiza as informações
+        """Atualiza as funções de Regressão linear e não linear"""
         Robot._functions["VelocityBattery"][1].append((Robot._currVelocity, Robot._currBattery))
         Robot._functions["VelocityTime"][1].append((Robot._timeSince100, Robot._currVelocity))
         Robot._functions["BatteryTime"][1].append((Robot._timeSince100, Robot._currBattery))
@@ -278,6 +249,8 @@ class Robot():
             100      # valor de B (começa sempre em 100)
         )
         
+        x.plot()
+        
         timeLast = x.predictX(battery, x.coef) - Robot._timeSince100
         
         return timeLast
@@ -321,8 +294,6 @@ class Robot():
         # Inicializar LinearRegression
         regression = Robot._functions["VelocityTime"][0].\
             generate(Robot._functions["VelocityTime"][1])
-        
-        regression.plot()
         
         return regression.predictY(eTime)
     

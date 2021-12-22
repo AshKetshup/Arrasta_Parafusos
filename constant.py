@@ -14,6 +14,15 @@ OBJ = {
     "CASHIER"  : "caixa"
 }
 
+# DIREÇÕES: Indica os valores equivalentes de cada orientação
+DIR = {
+    "STATIC"   : 0,
+    "RIGHT"    : 1,
+    "LEFT"     : 2,
+    "UP"       : 3,
+    "DOWN"     : 4,
+}
+
 # CATEGORIAS: Agrupa os varios objetos para identificação nos algoritmos correspondentes
 CATEGORY = {
     "OBJECT": [OBJ["CART"], OBJ["CASHIER"]],                   # Objetos

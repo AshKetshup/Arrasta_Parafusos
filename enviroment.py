@@ -1,4 +1,3 @@
-from typing import Iterator
 import networkx as nx
 from networkx.classes.graph import Graph
 
@@ -8,12 +7,14 @@ from zone import Zone
 from utils import Utils
 
 class Enviroment():
+    """Classe responsavel pelo gerenciamento dos grafos e das zonas."""
     _map = {
         "MIDPOINT": "mid",
         "WEIGHT"  : "weight",
         "ROBOT"   :  "X"
     }
     
+    # Zonas com suas coordenadas respetivas
     _zones = [
         Zone(( 30, 135), (165, 435)), # 1 
         Zone((135, 285), (165, 285)), # 2 
@@ -33,11 +34,11 @@ class Enviroment():
         Zone(( 30, 135), (435, 570))  # 16
     ]
     
-    _lastVisited = -1    # Indice da última zona visitada
-    _currentZone = -1    # Indice da zona onde o robot se encontra atualmente
+    _lastVisited = -1     # Indice da última zona visitada
+    _currentZone = -1     # Indice da zona onde o robot se encontra atualmente
     
-    _zoneMap = nx.Graph()
-    _infoMap = nx.Graph()
+    _zoneMap = nx.Graph() # Grafo da representação das conexões de zonas
+    _infoMap = nx.Graph() # Grafo da representação das informações de zonas
     
     
     @staticmethod
@@ -64,6 +65,12 @@ class Enviroment():
     
     @staticmethod
     def getCurrentZone() -> Zone:
+        """
+        Obtem a instancia da zona atual
+
+        Returns:
+            Zone: zona
+        """        
         return Enviroment._zones[Enviroment._currentZone]
     
     
@@ -91,31 +98,81 @@ class Enviroment():
     
     @staticmethod
     def zoneToString(index: int) -> str:
+        """
+        Gera a string representante de uma zona
+
+        Args:
+            index (int): index da zona
+
+        Returns:
+            str: zona em string
+        """        
         return f"Z{index+1:02d}"
     
     
     @staticmethod
     def entryToString(zFrom: int, zTo: int) -> str:
+        """
+        Gera a string representante de uma entrada
+
+        Args:
+            zFrom (int): zona origem
+            zTo (int): zona chegada
+
+        Returns:
+            str: entrada em string
+        """        
         return f"E{min(zFrom+1, zTo+1):02d}{max(zFrom+1, zTo+1):02d}"
     
     
     @staticmethod
-    def getEdgeBetweenZoneAndEntry(zFrom: int, zTo: int):
+    def getEdgeBetweenZoneAndEntry(zFrom: int, zTo: int) -> tuple[str, str]:
+        """
+        Obtem a areste por entre a zona e a entrada.
+
+        Args:
+            zFrom (int): zona origem
+            zTo (int): zona chegada
+
+        Returns:
+            tuple[str, str]: zona em string, entrada em string
+        """        
         return (Enviroment.zoneToString(zFrom), Enviroment.entryToString(zFrom, zTo))
     
     
     @staticmethod
     def getEdgeBetweenEntryAndEntry(z1: int, z2: int, z3: int) -> tuple[str, str]:
+        """
+        Obtem as arestas por entre as entradas das zonas.
+
+        Args:
+            z1 (int): index de zona 1
+            z2 (int): index de zona 2
+            z3 (int): index de zona 3
+
+        Returns:
+            tuple[str, str]: Arestas em string
+        """        
         return (Enviroment.entryToString(z1, z2), Enviroment.entryToString(z2, z3))
     
     
     @staticmethod
     def getMidPoint(zone: Zone) -> tuple[int, int]:
+        """
+        Obtem o ponto medio da zona em questão.
+
+        Args:
+            zone (Zone): Zona
+
+        Returns:
+            tuple[int, int]: Coordenadas do ponto medio
+        """        
         return Utils.calcMidPoint(zone.getXRange(), zone.getYRange())
     
     
     @staticmethod
     def generateEntryPaths() -> None:
+        """Gera o caminho para a entrada de uma zona."""        
         # Para cada zona no grafo:
         for zone in Enviroment._infoMap.nodes():
             zones = sorted(nx.all_neighbors(Enviroment._infoMap, zone))
@@ -143,7 +200,37 @@ class Enviroment():
 
 
     @staticmethod
+    def findNode(foo) -> tuple:
+        """
+        Encontra um nodo no grafo infoMap supondo uma condição.
+
+        Args:
+            foo (function): condição booleana de paragem.
+
+        Raises:
+            nx.NodeNotFound: levantado ao não encontrar o nodo
+
+        Returns:
+            tuple: nodo encontrado
+        """
+        resNode = None
+        for node in list(Enviroment._infoMap.nodes(data = True)):
+            try:
+                if foo(node):
+                    resNode = node
+                    break
+            except Zone.ZoneNotDefinedException as e:
+                continue
+        
+        if not resNode:
+            raise nx.NodeNotFound()
+        
+        return resNode
+
+
+    @staticmethod
     def updateMap() -> None:
+        """Atualiza o zoneMap."""        
         robotPos = Robot.getPosition()
         
         # Entrada 1 para MidPoint
@@ -171,38 +258,47 @@ class Enviroment():
    
             
     @staticmethod
-    def updateInfoMap(newZone: int):
+    def updateInfoMap(newZone: int) -> None:
+        """
+        Atualiza o infoMap.
+
+        Args:
+            newZone (int): index da nova zona.
+        """
+        # Se a nova zona não for o valor default (-1):
         if newZone != -1:
+            # Se entrarmos numa zona diferente à atual:
             if Enviroment._currentZone != newZone:
+                # Atualizamos a zona
                 Enviroment._currentZone, Enviroment._lastVisited = newZone, Enviroment._currentZone
+                # Adicionamos a aresta entre a zona atual e a nova
                 Enviroment._infoMap.add_edge(newZone, Enviroment._currentZone)
+                # Atualizamos o zoneMap
                 Enviroment.updateMap()
     
     
     @staticmethod
     def update(coordinates: tuple[int, int], objects: list[str] = []) -> None:
+        """
+        Atualiza os dados e grafos utilizados na execução dos problemas.
+
+        Args:
+            coordinates (tuple[int, int]): Coordenadas do atuais do robot.
+            objects (list[str], optional): Lista de objetos avistados atualmente. Por padrão [].
+        """        
         from objectManager import Objects
         
-        # Para cada zona:
-        for i, zone in enumerate(Enviroment._zones):
-            # Verificamos se estamos atualmente nela.
-            if zone.isIn(coordinates):
-                # Atualizamos o mapa de informação
-                Enviroment.updateInfoMap(i)
-                # Saimos do for loop
-                break
-
         adapted_pos = Robot.getAdaptedPosition()
-        adapted_zone = Enviroment._currentZone
+        # Para cada zona:
         for i, zone in enumerate(Enviroment._zones):
             # Verificamos se estamos atualmente nela.
             if zone.isIn(adapted_pos):
                 # Atualizamos o mapa de informação
-                adapted_zone = i
+                Enviroment.updateInfoMap(i)
                 # Saimos do for loop
                 break
         
-        curr = Enviroment._zones[adapted_zone]
+        curr = Enviroment.getCurrentZone()
         
         # Se existirem objetos
         if objects:
@@ -216,7 +312,7 @@ class Enviroment():
                     # Tentamos:
                     try:
                         # Obtemos os objetos atuais
-                        currentObjects = [n[1] for n in Enviroment._infoMap.nodes[adapted_zone][obj[0]]]
+                        currentObjects = [n[1] for n in Enviroment._infoMap.nodes[Enviroment._currentZone][obj[0]]]
                         
                         # Se o nome do objeto não estiver nos objetos atuais:
                         if obj[1] not in currentObjects:
@@ -224,19 +320,19 @@ class Enviroment():
                             #     no node da zona atual (dicionario), No indice do tipo de objeto
                             #     damos append nesse indice a posição adaptada do objeto e respetivo nome.
                             Enviroment._infoMap\
-                                .nodes[adapted_zone][obj[0]]\
+                                .nodes[Enviroment._currentZone][obj[0]]\
                                 .append((adapted_pos, obj[1]))
                     
                     # Ao levantar KeyError (Não foi encontrado a chave `obj[0]` no dicionario)
                     except KeyError:
                         # Atribuimos ao node da zona atual, no obj[0] atribuimos as coordenadas e o nome do objeto.
-                        Enviroment._infoMap.nodes[adapted_zone][obj[0]] = [(adapted_pos, obj[1])]
+                        Enviroment._infoMap.nodes[Enviroment._currentZone][obj[0]] = [(adapted_pos, obj[1])]
                 
                 # Adcionamos o objeto caso seja novo
                 Objects.add(obj, curr)
                 
         try:
-            Enviroment.getCurrentZone().getType()
+            curr.getType()
         except Exception:
             if Enviroment._lastVisited == -1:
                 curr.setStart()
@@ -244,11 +340,21 @@ class Enviroment():
                 
     @staticmethod
     def getTypeOfZone(zone: int) -> str:
+        """
+        Indica qual o tipo da zona pelo index da mesma.
+
+        Args:
+            zone (int): index da zona
+
+        Returns:
+            str: tipo de zona
+        """        
         return Enviroment._zones[zone].getType()
     
 
     @staticmethod
     def addRobotToGraph() -> None:
+        """Adiciona ao grafo um nodo representante da presença do Robot."""        
         # Criamos o nó correspondente ao Robot        
         Enviroment._zoneMap.add_node(Enviroment._map["ROBOT"])
         # Recolhemos todos os vizinhos da zona em que o Robot está atualmente
@@ -266,6 +372,7 @@ class Enviroment():
 
     @staticmethod
     def delRobotFromGraph() -> None:
+        """Apaga o nodo dedicado à presença do Robot"""
         try:
             # Remover o robot do grafo
             Enviroment._zoneMap.remove_node(Enviroment._map["ROBOT"])
@@ -275,7 +382,7 @@ class Enviroment():
 
     
     @staticmethod
-    def getProbabilityOfAdultInZoneIfThereIsChildButNoShopcar():
+    def getProbabilityOfAdultInZoneIfThereIsChildButNoShopcar() -> float:
         ''''Determina a probabilidade de encontrar um adulto na zona, 
         sabedo que está lá uma criança, mas nao um carrinho'''
 
@@ -285,7 +392,7 @@ class Enviroment():
         zones_with_adult_and_child_but_no_shopcar = 0
         zones_with_child_but_no_shopcar           = 0
 
-        '''Efetuar ciclo para verificar zona no grafo e incrementar as variaveis acima'''
+        # Efetuar ciclo para verificar zona no grafo e incrementar as variaveis acima
         for node in list(Enviroment._infoMap.nodes(data = True)):
             if OBJ["ADULT"] in node[1] and OBJ["CHILD"] in node[1] and not OBJ["CART"] in node[1]:
                 zones_with_adult_and_child_but_no_shopcar += 1
@@ -304,30 +411,33 @@ class Enviroment():
 
 
     @staticmethod
-    def getProbabilityOfNextPersonBeAChild():
-        '''Determina a probabilidade de a proxima pessoa ser uma criança'''
+    def getProbabilityOfNextPersonBeAChild() -> float:
+        """
+        Determina a probabilidade de a proxima pessoa ser uma criança
+        Contabiliza os "objetos" agrupando-os de forma individual
+        
+          A: Adult
+          B: Shopcar
+          C: Child
+          n: NOT
+        
+          'and' usado para simular o seguinte: P(B,C)
+        Exemplo: ABnC = Adult and Shopcar and NOT Child
 
-        # Contabiliza os "objetos" agrupando-os de forma individual
-        # Let:
-        #   A = Adult
-        #   B = Shopcar
-        #   C = Child
-        #   n = NOT
-        #   and, used to simulate the following P(B,C)
-        # Example: LCnX = Adult and Shopcar and NOT Child
-
+        Returns:
+            float: probabilidade de a proxima pessoa avistada ser uma criança
+        """
+        # Contadores
         countA = 0
         countB = 0
         countC = 0
 
-        
-        #A probabilidade que estamos a calcular pode-se tradizir da seguinte forma.
-        #P(C) = P(C,B) / P(B)
-        
-        #Assim sendo, o robo só precisa de recolher as probabilidades de A e B
-        #A nossa linha de raciocinio esta devidamente clarificada no pdf do relatorio
+        # A probabilidade que estamos a calcular pode-se tradizir da seguinte forma.
+        # P(C) = P(C,B) / P(B)
+        # Assim sendo, o robo só precisa de recolher as probabilidades de A e B
+        # A nossa linha de raciocinio esta devidamente clarificada no pdf do relatorio
 
-        '''Efetuar ciclo para verificar zona no grafo e incrementar as variaveis acima '''
+        # Efetuar ciclo para verificar zona no grafo e incrementar as variaveis acima
         
         for node in list(Enviroment._infoMap.nodes(data = True)):
             if OBJ["ADULT"] in node[1]:
@@ -337,19 +447,19 @@ class Enviroment():
             if OBJ["CHILD"] in node[1]:
                 countC += len(node[1][OBJ["CHILD"]])
                 
-        #Contabiliza os "objectos" encontrados (crianças, adultos e carrinhos)
+        # Contabiliza os "objectos" encontrados (crianças, adultos e carrinhos)
         total_objects = countA + countB + countC
         
-        #Calculo das probabilidades
-        prob_adult = countA / total_objects
-        prob_shopcar = countB / total_objects
+        # Calculo das probabilidades
+        pA = countA / total_objects
+        pB = countB / total_objects
 
-        #0.8 e o 0.1 são valores provenienetes da tabela dada no enunciadoe são respetivamente
-        #prob_C_knowing_AB = 0.8 e prob_C_knowing_nAB = 0.1  
-        prob_BAC = (prob_adult * prob_shopcar * 0.8)
-        prob_BnAC = ((1 - prob_adult) * prob_shopcar * 0.1)
-        prob_C_and_B = prob_BAC + prob_BnAC
+        # 0.8 e o 0.1 são valores provenienetes da tabela dada no enunciadoe são respetivamente
+        # prob_C_knowing_AB = 0.8 e prob_C_knowing_nAB = 0.1  
+        pBAC = (pA * pB * 0.8)
+        pBnAC = ((1 - pA) * pB * 0.1)
+        pCandB = pBAC + pBnAC
 
-        #Probabilidade pretendida
-        return prob_C_and_B / prob_shopcar
+        # Probabilidade pretendida
+        return pCandB / pB
    
