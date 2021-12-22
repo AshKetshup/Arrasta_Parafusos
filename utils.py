@@ -22,7 +22,7 @@ class SimpleException(Exception):
 
         Returns:
             str: Payload da exceção.
-        """        
+        """
         return self.payload
 
 

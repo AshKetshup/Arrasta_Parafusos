@@ -1,4 +1,5 @@
 from utils import SimpleException, myself
+from constant import OBJ
 
 class Zone():
     """
@@ -93,7 +94,7 @@ class Zone():
         return self._zoneType
     
 
-    def setType(self, zoneType: str) -> None:
+    def setType(self, obj: tuple[str, str]) -> None:
         """
         Configura o tipo de zona atual.
 
@@ -104,8 +105,25 @@ class Zone():
             print(Zone.ERROR_ZONE_ALREADY_DEFINED)
             raise Zone.ZoneAlreadyDefinedException(Zone.ERROR_ZONE_ALREADY_DEFINED, myself())
         
-        self._zoneType = zoneType
+        if obj[0] == OBJ["CASHIER"]:
+            self._zoneType = "Saida"
+        else:
+            self._zoneType = obj[1]
 
+
+    def setStart(self) -> None:
+        """
+        Configura o tipo de zona atual.
+
+        Args:
+            `zoneType` (str): Tipo de zona atual.
+        """
+        if self._zoneType:
+            print(Zone.ERROR_ZONE_ALREADY_DEFINED)
+            raise Zone.ZoneAlreadyDefinedException(Zone.ERROR_ZONE_ALREADY_DEFINED, myself())
+        
+        self._zoneType = "Entrada"
+        
     
     def getXRange(self) -> tuple[int, int]:
         return self._xRange

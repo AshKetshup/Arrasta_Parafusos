@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
-from objectManager import Objects
+from constant import SIZE
 from utils import Utils, SimpleException
 
 class Robot():
@@ -146,8 +146,8 @@ class Robot():
             return position
         
         return (
-            position[0] + Objects.SIZE["OBJECT"] if Robot.DIR["RIGHT"] in direction else -Objects.SIZE["OBJECT"],
-            position[1] + Objects.SIZE["OBJECT"] if Robot.DIR["DOWN"]  in direction else -Objects.SIZE["OBJECT"]
+            position[0] + SIZE["OBJECT"] if Robot.DIR["RIGHT"] in direction else -SIZE["OBJECT"],
+            position[1] + SIZE["OBJECT"] if Robot.DIR["DOWN"]  in direction else -SIZE["OBJECT"]
         )
 
 
